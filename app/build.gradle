@@ -2,6 +2,7 @@ def androidDefaultConfig = rootProject.ext.androidDefaultConfig
 def currentModule = rootProject.ext.modules.app
 def plugins = rootProject.ext.plugins
 def libsVersion = rootProject.ext.libsVersion
+def manifestPath = rootProject.ext.manifestPath
 if (currentModule.isRunAlone) {
     apply plugin: plugins.application
 } else {
@@ -37,6 +38,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    sourceSets{
+        main{
+            if(currentModule.isRunAlone){
+                manifest.srcFile manifestPath.application
+            }else{
+                manifest.srcFile manifestPath.library
+            }
+        }
+    }
+
 }
 
 dependencies {
@@ -47,8 +59,8 @@ dependencies {
     testImplementation "junit:junit:$libsVersion.junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$libsVersion.androidxjunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$libsVersion.espressoCoreVersion"
-    def isComponentBaseRunAlone = rootProject.modules.ffmpeg.isRunAlone
+    def isComponentBaseRunAlone = rootProject.modules.module_ffmpeg.isRunAlone
     if (!isComponentBaseRunAlone) {
-        api project(path: ':ffmpeg')
+        api project(path: ':module_ffmpeg')
     }
 }

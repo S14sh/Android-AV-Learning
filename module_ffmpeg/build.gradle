@@ -1,7 +1,9 @@
 def androidDefaultConfig = rootProject.ext.androidDefaultConfig
-def currentModule = rootProject.ext.modules.ffmpeg
+def currentModule = rootProject.ext.modules.module_ffmpeg
 def plugins = rootProject.ext.plugins
 def libsVersion = rootProject.ext.libsVersion
+def manifestPath = rootProject.ext.manifestPath
+def CMakePath = rootProject.ext.CMakePath
 if (currentModule.isRunAlone) {
     apply plugin: plugins.application
 } else {
@@ -47,8 +49,18 @@ android {
 
     externalNativeBuild {
         cmake {
-            path "src/main/cpp/CMakeLists.txt"
+            path CMakePath.path
             version libsVersion.CMakeVersion
+        }
+    }
+
+    sourceSets{
+        main{
+            if(currentModule.isRunAlone){
+                manifest.srcFile manifestPath.application
+            }else{
+                manifest.srcFile manifestPath.library
+            }
         }
     }
 
