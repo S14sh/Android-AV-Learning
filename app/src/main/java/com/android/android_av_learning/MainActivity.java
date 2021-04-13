@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Example of a call to a native method
         TextView tv = findViewById(R.id.sample_text);
-        tv.setText(FfmpegUtil.getInstance().stringFromJNI());
+        tv.setText(FfmpegUtil.getInstance().getFfmpegVersion());
     }
 
 }

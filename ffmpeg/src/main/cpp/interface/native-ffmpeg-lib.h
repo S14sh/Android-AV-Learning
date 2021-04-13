@@ -11,6 +11,6 @@ const char *getFFmpegVer();
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_util_FfmpegUtil_stringFromJNI(JNIEnv *env, jobject thiz);
+Java_util_FfmpegUtil_getFfmpegVersion(JNIEnv *env, jobject thiz);
 
 #endif //ANDROID_AV_LEARNING_NATIVE_FFMPEG_LIB_H

@@ -5,6 +5,6 @@ const char *getFFmpegVer() {
 }
 
 extern "C"
-jstring Java_util_FfmpegUtil_stringFromJNI(JNIEnv *env, jobject thiz) {
+jstring Java_util_FfmpegUtil_getFfmpegVersion(JNIEnv *env, jobject thiz) {
     return env->NewStringUTF(getFFmpegVer());
 }
