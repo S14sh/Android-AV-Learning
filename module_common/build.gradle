@@ -1,0 +1,62 @@
+def androidDefaultConfig = rootProject.ext.androidDefaultConfig
+def currentModule = rootProject.ext.modules.module_common
+def plugins = rootProject.ext.plugins
+def libsVersion = rootProject.ext.libsVersion
+def manifestPath = rootProject.ext.manifestPath
+if (currentModule.isRunAlone) {
+    apply plugin: plugins.application
+} else {
+    apply plugin: plugins.library
+}
+android {
+    compileSdkVersion androidDefaultConfig.compileSdkVersion
+    buildToolsVersion androidDefaultConfig.buildToolsVersion
+
+    defaultConfig {
+        if (currentModule.isRunAlone) {
+            applicationId currentModule.applicationId
+        }
+        minSdkVersion androidDefaultConfig.minSdkVersion
+        targetSdkVersion androidDefaultConfig.targetSdkVersion
+        versionCode currentModule.versionCode
+        versionName currentModule.versionName
+        manifestPlaceholders = [LABEL_NAME: currentModule.appName]
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets{
+        main{
+            if(currentModule.isRunAlone){
+                manifest.srcFile manifestPath.application
+            }else{
+                manifest.srcFile manifestPath.library
+            }
+        }
+    }
+
+}
+
+dependencies {
+
+    implementation "androidx.appcompat:appcompat:$libsVersion.appcompatVersion"
+    implementation "com.google.android.material:material:$libsVersion.materialVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$libsVersion.constraintlayoutVersion"
+    testImplementation "junit:junit:$libsVersion.junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$libsVersion.androidxjunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$libsVersion.espressoCoreVersion"
+}

@@ -1,3 +1,4 @@
+include ':module_common'
 include ':module_ffmpeg'
 include ':app'
 rootProject.name = "Android-AV-Learning"

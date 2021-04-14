@@ -15,6 +15,7 @@ ext {
             junitVersion           : "4.+",
             androidxjunitVersion   : "1.1.2",
             espressoCoreVersion    : "3.3.0",
+            gradleVersion          : "4.1.3",
     ]
     modules = [
             module_ffmpeg: [
@@ -24,6 +25,14 @@ ext {
                     versionName   : getSelfDefinedVersionName("V1.0."),//版本名
                     appName       : "ffmpeg库",//应用名称
                     resourcePrefix: "ffmpeg",//资源名前缀约束
+            ],
+            module_common:[
+                    isRunAlone    : false,
+                    applicationId : "${androidDefaultConfig["applicationId"]}.common",
+                    versionCode   : 1,//版本号
+                    versionName   : getSelfDefinedVersionName("V1.0."),//版本名
+                    appName       : "基类库",//应用名称
+                    resourcePrefix: "common",//资源名前缀约束
             ],
             app          : [
                     isRunAlone    : true,
