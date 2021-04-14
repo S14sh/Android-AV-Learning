@@ -7,8 +7,6 @@ extern "C" {
 #include <libavutil/avutil.h>
 }
 
-const char *getFFmpegVer();
-
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_util_FfmpegUtil_getFfmpegVersion(JNIEnv *env, jobject thiz);
