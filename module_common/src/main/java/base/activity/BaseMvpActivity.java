@@ -6,10 +6,10 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import base.dialogfragment.LoadingDialog;
-import base.mvp.presenter.BasePresenter;
+import base.mvp.presenter.IBasePresenter;
 import base.mvp.view.IBaseView;
 
-public abstract class BaseMvpActivity<P extends BasePresenter>
+public abstract class BaseMvpActivity<P extends IBasePresenter>
         extends BaseActivity
         implements IBaseView {
 

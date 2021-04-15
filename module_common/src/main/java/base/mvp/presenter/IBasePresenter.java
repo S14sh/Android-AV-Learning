@@ -1,4 +1,6 @@
 package base.mvp.presenter;
 
-public interface IBasePresenter {
+import androidx.lifecycle.LifecycleEventObserver;
+
+public interface IBasePresenter extends LifecycleEventObserver {
 }

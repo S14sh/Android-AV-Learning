@@ -54,6 +54,10 @@ android {
 dependencies {
 
     implementation "androidx.appcompat:appcompat:$libsVersion.appcompatVersion"
+//  ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$libsVersion.lifecycleVersion"
+//  LivaData
+    implementation "androidx.lifecycle:lifecycle-livedata:$libsVersion.lifecycleVersion"
     implementation "com.google.android.material:material:$libsVersion.materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$libsVersion.constraintlayoutVersion"
     testImplementation "junit:junit:$libsVersion.junitVersion"

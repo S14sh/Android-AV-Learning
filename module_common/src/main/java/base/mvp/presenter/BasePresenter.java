@@ -14,7 +14,7 @@ import java.lang.reflect.Proxy;
 import base.mvp.model.IBaseModel;
 import base.mvp.view.IBaseView;
 
-public abstract class BasePresenter<V extends IBaseView, M extends IBaseModel> implements LifecycleEventObserver {
+public abstract class BasePresenter<V extends IBaseView, M extends IBaseModel>{
 
     protected V mProxyView;
     protected M mModel;
