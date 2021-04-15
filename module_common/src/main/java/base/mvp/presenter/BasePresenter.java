@@ -2,6 +2,10 @@ package base.mvp.presenter;
 
 import android.content.Context;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -10,12 +14,13 @@ import java.lang.reflect.Proxy;
 import base.mvp.model.IBaseModel;
 import base.mvp.view.IBaseView;
 
-public abstract class BasePresenter<V extends IBaseView, M extends IBaseModel> {
+public abstract class BasePresenter<V extends IBaseView, M extends IBaseModel> implements LifecycleEventObserver {
 
     protected V mProxyView;
     protected M mModel;
     protected WeakReference<V> mWeakReference;
 
+    @OnLifecycleEvent(value = Lifecycle.Event.ON_CREATE)
     public void attachView(V view) {
         mWeakReference = new WeakReference<>(view);
         mProxyView = (V) Proxy.newProxyInstance(view.getClass().getClassLoader(), view.getClass().getInterfaces(), new MvpViewHandler(mWeakReference.get()));
@@ -23,6 +28,7 @@ public abstract class BasePresenter<V extends IBaseView, M extends IBaseModel> {
             this.mModel = createModel();
     }
 
+    @OnLifecycleEvent(value = Lifecycle.Event.ON_DESTROY)
     public void detachView() {
         this.mModel = null;
         if (isViewAttached()) {

@@ -28,8 +28,7 @@ public abstract class BaseMvpActivity<P extends BasePresenter>
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         mPresenter = createPresenter();
-        if (mPresenter != null)
-            mPresenter.attachView(this);
+        getLifecycle().addObserver(mPresenter);
         super.onCreate(savedInstanceState);
         initData();
     }
@@ -37,10 +36,7 @@ public abstract class BaseMvpActivity<P extends BasePresenter>
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mPresenter != null) {
-            mPresenter.detachView();
-            mPresenter = null;
-        }
+        mPresenter = null;
     }
 
     @Override
@@ -55,6 +51,7 @@ public abstract class BaseMvpActivity<P extends BasePresenter>
     public void dismissLoadingDialog() {
         if (mLoadingDialog != null)
             mLoadingDialog.dismiss();
+        mLoadingDialog = null;
     }
 
     @Override
