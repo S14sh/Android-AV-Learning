@@ -1,3 +1,4 @@
+include ':module_fdkaac'
 include ':module_common'
 include ':module_ffmpeg'
 include ':app'

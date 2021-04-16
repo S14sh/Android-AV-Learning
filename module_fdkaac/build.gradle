@@ -1,14 +1,14 @@
 def androidDefaultConfig = rootProject.ext.androidDefaultConfig
-def currentModule = rootProject.ext.modules.module_ffmpeg
+def currentModule = rootProject.ext.modules.module_fdkaac
 def plugins = rootProject.ext.plugins
 def libsVersion = rootProject.ext.libsVersion
 def manifestPath = rootProject.ext.manifestPath
-def CMakePath = rootProject.ext.CMakePath
 if (currentModule.isRunAlone) {
     apply plugin: plugins.application
 } else {
     apply plugin: plugins.library
 }
+
 android {
     compileSdkVersion androidDefaultConfig.compileSdkVersion
     buildToolsVersion androidDefaultConfig.buildToolsVersion
@@ -22,7 +22,6 @@ android {
         versionCode currentModule.versionCode
         versionName currentModule.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"

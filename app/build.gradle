@@ -20,7 +20,6 @@ android {
         targetSdkVersion androidDefaultConfig.targetSdkVersion
         versionCode currentModule.versionCode
         versionName currentModule.versionName
-        manifestPlaceholders = [LABEL_NAME: currentModule.appName]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

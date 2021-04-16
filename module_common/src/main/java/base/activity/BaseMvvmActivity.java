@@ -4,12 +4,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import base.mvvm.view.IBaseView;
 import base.mvvm.viewmodel.BaseViewModel;
 
 public abstract class BaseMvvmActivity<VM extends BaseViewModel>
-        extends BaseActivity
-        implements IBaseView {
+        extends BaseActivity {
 
     private VM mViewModel;
 

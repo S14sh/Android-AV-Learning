@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/module_common" />
+            <option value="$PROJECT_DIR$/module_fdkaac" />
             <option value="$PROJECT_DIR$/module_ffmpeg" />
           </set>
         </option>
