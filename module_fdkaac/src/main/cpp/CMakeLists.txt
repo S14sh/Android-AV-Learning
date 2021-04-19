@@ -9,6 +9,20 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("android_av_learning")
 
+set(LIBS_DIR ${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI})
+
+FILE(GLOB NATIVE_FDKAAC_LIB_CPP ${CMAKE_SOURCE_DIR}/interface/*.cpp)
+FILE(GLOB NATIVE_FDKAAC_LIB_H ${CMAKE_SOURCE_DIR}/interface/*.h)
+FILE(GLOB AAC_ENCODER_CPP ${CMAKE_SOURCE_DIR}/aacencoder/*.cpp)
+FILE(GLOB AAC_ENCODER_H ${CMAKE_SOURCE_DIR}/aacencoder/*.h)
+FILE(GLOB AAC_DECODER_CPP ${CMAKE_SOURCE_DIR}/aacdecoder/*.cpp)
+FILE(GLOB AAC_DECODER_H ${CMAKE_SOURCE_DIR}/aacdecoder/*.h)
+
+include_directories(${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI}/include)
+include_directories(${NATIVE_FDKAAC_LIB_H})
+include_directories(${AAC_ENCODER_H})
+include_directories(${AAC_DECODER_H})
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -21,11 +35,11 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        interface/native-fdkaac-lib.cpp)
+        ${NATIVE_FDKAAC_LIB_CPP}
+        ${AAC_ENCODER_CPP}
+        ${AAC_DECODER_CPP})
 
-include_directories(${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI}/include)
 
-set(LIBS_DIR ${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI})
 
 add_library(fdk-aac STATIC IMPORTED)
 set_target_properties(fdk-aac PROPERTIES IMPORTED_LOCATION ${LIBS_DIR}/libfdk-aac.a)
@@ -50,7 +64,7 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
         native-fdkaac-lib
 
-        fdk-aac android
+        fdk-aac
 
         # Links the target library to the log library
         # included in the NDK.
