@@ -1,5 +1,4 @@
 #include "AACEncoder.h"
-#include <android/log.h>
 
 AACEncoder::AACEncoder() {
 
@@ -172,12 +171,12 @@ void AACEncoder::writeAACPacket2File(uint8_t *data, int datalen) {
         memset(_buffer, 0, datalen);
         memcpy(_buffer + 7, data, datalen - 7);
         addADTS2Packet(_buffer, datalen);
-        outStream<<_buffer;
+        outStream << _buffer;
         delete[]_buffer;
         return;
     }
     //完整的流
-    outStream<<buffer;
+    outStream << buffer;
 }
 
 /**
@@ -209,34 +208,32 @@ void AACEncoder::writeAACPacket2File(uint8_t *data, int datalen) {
                     2：L+R
                     3：C+L+R
 */
-void AACEncoder::addADTS2Packet(uint8_t *packet, int packetLen) {
-    int profile = 1;
-    int freqIdx = 4; // 44.1KHz
-    int chanCfg = 1; // 通道
-
-    PutBitContext pb;
-    init_put_bits(&pb, packet, ADTS_HEADER_SIZE);
-    /* adts_fixed_header */
-    put_bits(&pb, 12, 0xfff);   /* syncword ：代表一个ADTS帧的开始, 用于同步，解码器可通过0xFFF确定每个ADTS的开始位置*/
-    put_bits(&pb, 1, 0);        /* ID ：MPEG Version: 0 for MPEG-4, 1 for MPEG-2*/
-    put_bits(&pb, 2, 0);        /* layer always: '00'*/
-    put_bits(&pb, 1, 1);        /* protection_absent */
-    put_bits(&pb, 2, profile); /* profile_objecttype 表示使用哪个级别的AAC，如01 Low Complexity(LC) -- AAC LC*/
-    put_bits(&pb, 4, freqIdx); //采样率的下标.
-    put_bits(&pb, 1, 0);        /* private_bit */
-    put_bits(&pb, 3, chanCfg); /* channel_configuration 声道数. 比如2表示立体声双声道.*/
-    put_bits(&pb, 1, 0);        /* original_copy */
-    put_bits(&pb, 1, 0);        /* home */
-
-    /* adts_variable_header */
-    put_bits(&pb, 1, 0);        /* copyright_identification_bit */
-    put_bits(&pb, 1, 0);        /* copyright_identification_start */
-    put_bits(&pb, 13, packetLen); /* aac_frame_length */
-    put_bits(&pb, 11, 0x7ff);   /* adts_buffer_fullness */
-    put_bits(&pb, 2, 0);        /* number_of_raw_data_blocks_in_frame */
-
-    flush_put_bits(&pb);
-}
+//void AACEncoder::addADTS2Packet(uint8_t *packet, int packetLen, int profile, int freqIdx, int chanCfg) {
+//    //profile默认为AAC LC, freqIdx默认为44.1KHz, chanCfg默认为单通道
+//
+//    PutBitContext pb;
+//    init_put_bits(&pb, packet, ADTS_HEADER_SIZE);
+//    /* adts_fixed_header */
+//    put_bits(&pb, 12, 0xfff);   /* syncword ：代表一个ADTS帧的开始, 用于同步，解码器可通过0xFFF确定每个ADTS的开始位置*/
+//    put_bits(&pb, 1, 0);        /* ID ：MPEG Version: 0 for MPEG-4, 1 for MPEG-2*/
+//    put_bits(&pb, 2, 0);        /* layer always: '00'*/
+//    put_bits(&pb, 1, 1);        /* protection_absent */
+//    put_bits(&pb, 2, profile); /* profile_objecttype 表示使用哪个级别的AAC，如01 Low Complexity(LC) -- AAC LC*/
+//    put_bits(&pb, 4, freqIdx); //采样率的下标.
+//    put_bits(&pb, 1, 0);        /* private_bit */
+//    put_bits(&pb, 3, chanCfg); /* channel_configuration 声道数. 比如2表示立体声双声道.*/
+//    put_bits(&pb, 1, 0);        /* original_copy */
+//    put_bits(&pb, 1, 0);        /* home */
+//
+//    /* adts_variable_header */
+//    put_bits(&pb, 1, 0);        /* copyright_identification_bit */
+//    put_bits(&pb, 1, 0);        /* copyright_identification_start */
+//    put_bits(&pb, 13, packetLen); /* aac_frame_length */
+//    put_bits(&pb, 11, 0x7ff);   /* adts_buffer_fullness */
+//    put_bits(&pb, 2, 0);        /* number_of_raw_data_blocks_in_frame */
+//
+//    flush_put_bits(&pb);
+//}
 
 void AACEncoder::destory() {
     LOGI("Enter AACEncoder Destroy");

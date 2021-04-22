@@ -5,12 +5,31 @@
 #include <fstream>
 #include <aacenc_lib.h>
 #include <zconf.h>
+#include <android/log.h>
+#include <ADTSHead.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #ifdef __ANDROID__
 #define LOG_TAG "AACEncoder"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #endif
+
+/**
+* 定义 AAC 编码格式
+* LC-AAC:应用于中高码率场景的编码 （>= 80Kbit/s）
+* HE-AAC:主要应用于中低码率场景的编码 (<= 80kit/s)
+* HE-V2-AAC: 主要应用于低码率场景的编码 (<= 48Kbit/s)
+*/
+typedef enum {
+    LC_AAC = 2;
+    HE_AAC = 5;
+    LC_v2_AAC = 29;
+} AACProfile;
 
 const char *fdkaac_error(AACENC_ERROR erraac) {
     switch (erraac) {
@@ -43,18 +62,6 @@ const char *fdkaac_error(AACENC_ERROR erraac) {
     }
 }
 
-/**
- * 定义 AAC 编码格式
- * LC-AAC:应用于中高码率场景的编码 （>= 80Kbit/s）
- * HE-AAC:主要应用于中低码率场景的编码 (<= 80kit/s)
- * HE-V2-AAC: 主要应用于低码率场景的编码 (<= 48Kbit/s)
- */
-typedef enum {
-    LC_AAC = 2;
-    HE_AAC = 5;
-    LC_v2_AAC = 29;
-} AACProfile;
-
 class AACEncoder {
 private:
     HANDLE_AACENCODER mAacEncoder;
@@ -79,10 +86,13 @@ public:
 
     int fdkEncoderAudio();
 
-    void addADTS2Packet(uint8_t *packet, int packetLen);
+    void addADTS2Packet(uint8_t *packet, int packetLen, int profile = 1, int freqIdx = 4, int chanCfg = 1);
 
     void writeAACPacket2File(uint8_t *data, int datalen);
 
 };
 
+#ifdef __cplusplus
+}
+#endif
 #endif //ANDROID_AV_LEARNING_AACENCODER_H
