@@ -12,6 +12,15 @@ ADTSHead::ADTSHead() {
     setProtectionAbsent();
     setProfile();
     setSamplingFrequencyIndex();
+    setPrivateBit();
+    setChannelConfiguration();
+    setOriginalCopy();
+    setHome();
+    setCopyrightIdentificationBit();
+    setCopyrightIdentificationStart();
+    setAacFrameLength();
+    setAdtsBufferFullness();
+    setNumberOfRawDataBlocksInFrame();
 }
 
 ADTSHead::ADTSHead(uint8_t data[ADTS_HEADER_SIZE]) {
@@ -44,11 +53,52 @@ void ADTSHead::setProtectionAbsent(unsigned int value) {
 }
 
 void ADTSHead::setProfile(unsigned int value) {
-    data[2] |= ((value & 0x3) << 2);
+    data[2] |= ((value & 0x3) << 6);
 }
 
 void ADTSHead::setSamplingFrequencyIndex(unsigned int value) {
-    data[2] |= ((value & 0xc) >> 2);
-    data[3] |= ((value & 0x3) << 2);
+    data[2] |= ((value & 0xc) << 4);
+    data[2] |= ((value & 0x3) << 2);
 }
+
+void ADTSHead::setPrivateBit(unsigned int value) {
+    data[2] |= ((value & 1) << 1);
+}
+
+void ADTSHead::setChannelConfiguration(unsigned int value) {
+    data[2] |= ((value & 0x4) >> 2);
+    data[3] |= ((value & 0x3) << 6);
+}
+
+void ADTSHead::setOriginalCopy(unsigned int value) {
+    data[3] |= ((value & 1) << 5);
+}
+
+void ADTSHead::setHome(unsigned int value) {
+    data[3] |= ((value & 1) << 4);
+}
+
+void ADTSHead::setCopyrightIdentificationBit(unsigned int value) {
+    data[3] |= ((value & 1) << 3);
+}
+
+void ADTSHead::setCopyrightIdentificationStart(unsigned int value) {
+    data[3] |= ((value & 1) << 2);
+}
+
+void ADTSHead::setAacFrameLength(unsigned int value) {
+    data[3] |= ((value >> 11) & 0x3);
+    data[4] = (value & 0x7f8);
+    data[5] |= ((value & 0x7) << 5);
+}
+
+void ADTSHead::setAdtsBufferFullness(unsigned int value) {
+    data[5] |= ((value >> 6) & 0x1f);
+    data[6] |= ((value & 0x3f) << 2);
+}
+
+void ADTSHead::setNumberOfRawDataBlocksInFrame(unsigned int value) {
+    data[6] |= (value & 0x3);
+}
+
 

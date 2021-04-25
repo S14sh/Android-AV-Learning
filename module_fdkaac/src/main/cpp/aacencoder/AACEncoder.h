@@ -21,9 +21,9 @@ extern "C"
 
 /**
 * 定义 AAC 编码格式
-* LC-AAC:应用于中高码率场景的编码 （>= 80Kbit/s）
-* HE-AAC:主要应用于中低码率场景的编码 (<= 80kit/s)
-* HE-V2-AAC: 主要应用于低码率场景的编码 (<= 48Kbit/s)
+* LC-AAC:应用于中高码率场景的编码 （>= 80KBit/s）
+* HE-AAC:主要应用于中低码率场景的编码 (<= 80KBit/s)
+* HE-V2-AAC: 主要应用于低码率场景的编码 (<= 48KBit/s)
 */
 typedef enum {
     LC_AAC = 2;
@@ -69,6 +69,7 @@ private:
     uint8_t *mInBuffer = nullptr;
     int mInBufferCursor;
     int mInputSizeFixed;
+    //acc每帧采样1024个sample
     uint8_t mAacOutBuffer[1024 * 2 * 10];
     //设置编码Header
     bool isFlagGlobalHeader = false;
