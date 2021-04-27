@@ -75,21 +75,75 @@ private:
     bool isFlagGlobalHeader = false;
     std::ofstream outStream;
 public:
+
     AACEncoder();
 
     virtual ~AACEncoder();
 
-    int init(AACProfile aacProfile, int sampleRate, int channels, int bitRate);
+    /**
+     * 初始化编码器
+     * @param name 输出文件名，默认为fdkaac_encode
+     * @param aacProfile profile参数，默认为LC_AAC
+     * @param sampleRate 采样率，默认为44100kHz
+     * @param channels 通道数，默认为单通道
+     * @param bitRate 比特率，默认为128000
+     * @param isOutputWithoutADTS 编码是否带ADTS头默认带ADTS头
+     * @return 返回是否初始化成功
+     */
+    int init(const std::string &name = "fdkaac_encode", const AACProfile &aacProfile = LC_AAC,
+             const int &sampleRate = 44100,
+             const int &channels = 1,
+             const int &bitRate = 128000, const bool &isOutputWithoutADTS = false);
 
-    int encode(Byte *pData, int dataByteSize, char **outBuffer);
+    /**
+     *
+     * @param pData 原始数据(PCM)
+     * @param dataByteSize 需要处理的字节数
+     * @param outBuffer 输出数组
+     * @return 返回编码成功的字节数
+     */
+    int encode(const Byte *const pData, int dataByteSize, char **outBuffer);
 
     void destory();
 
+    /**
+     * 使用FDKAAC进行编码
+     * @return 返回编码成功的字节数
+     */
     int fdkEncoderAudio();
 
-    void addADTS2Packet(uint8_t *packet, int packetLen, int profile = 1, int freqIdx = 4, int chanCfg = 1);
+    /**
+     * 将ADTS头数据写入文件中
+     * @param packetLen 后面的一帧AAC裸流长度
+     * @param profile profile参数 0-Main profile, 1-AAC LC，2-SSR
+     * @param freqIdx 采样率下标
+     *              0: 96000 Hz
+                    1: 88200 Hz
+                    2: 64000 Hz
+                    3: 48000 Hz
+                    4: 44100 Hz
+                    5: 32000 Hz
+                    6: 24000 Hz
+                    7: 22050 Hz
+                    8: 16000 Hz
+                    9: 12000 Hz
+                    10: 11025 Hz
+                    11: 8000 Hz
+                    12: 7350 Hz
+                    13: Reserved
+                    14: Reserved
+                    15: frequency is written explictly
+     * @param chanCfg 通道数 2：L+R 3：C+L+R
+     */
+    void addADTS2Packet(const int &packetLen, const int &profile = 1, const int &freqIdx = 4,
+                        const int &chanCfg = 1);
 
-    void writeAACPacket2File(uint8_t *data, int datalen);
+    /**
+     * 将AAC数据写入文件
+     * @param data AAC裸流
+     * @param datalen AAC裸流数据字节数
+     */
+    void writeAACPacket2File(const uint8_t *const data, const int &datalen);
 
 };
 

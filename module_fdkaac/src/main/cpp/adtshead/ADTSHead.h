@@ -2,6 +2,7 @@
 #define ANDROID_AV_LEARNING_ADTSHEAD_H
 
 #include <iostream>
+#include <fstream>
 
 #ifdef __cplusplus
 extern "C"
@@ -27,19 +28,19 @@ public:
     const uint8_t *const getData();
 
     //关键字SyncWord用于识别帧开头，长度为12bit(0xfff)
-    void setSyncWord(unsigned int value = 0xfff);
+    void setSyncWord(const unsigned int &value = 0xfff);
 
     //关键字ID，MPEG Version: 0 for MPEG-4, 1 for MPEG-2,长度为1bit
-    void setID(unsigned int value = 0);
+    void setID(const unsigned int &value = 0);
 
     //关键字layer,长度2bit,总是00
-    void setLayer(unsigned int value = 0);
+    void setLayer(const unsigned int &value = 0);
 
     //关键字protection_absent,长度1bit(set to 1 if there is no CRC(循环冗余校验) and 0 if there is CRC)
-    void setProtectionAbsent(unsigned int value = 1);
+    void setProtectionAbsent(const unsigned int &value = 1);
 
     //关键字profile,长度2bit,表示使用哪个级别的AAC
-    void setProfile(unsigned int value = 0x3);
+    void setProfile(const unsigned int &value = 1);
 
     //关键字sampling_frequency_index,长度为4bit,表示采样率的下标
     /*
@@ -60,10 +61,10 @@ public:
                     14: Reserved
                     15: frequency is written explictly
      */
-    void setSamplingFrequencyIndex(unsigned int value = 0x4);
+    void setSamplingFrequencyIndex(const unsigned int &value = 0x4);
 
     //关键字private_bit，长度1bit，私有位，编码时设置为0，解码时忽略
-    void setPrivateBit(unsigned int value = 0x1);
+    void setPrivateBit(const unsigned int &value = 0x1);
 
     //关键字channel_configuration,长度3bit,表示声道数
     /*
@@ -77,30 +78,32 @@ public:
         7: 8 channels: front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel
         8-15: Reserved
      */
-    void setChannelConfiguration(unsigned int value = 0x1);
+    void setChannelConfiguration(const unsigned int &value = 0x1);
 
     //关键字original_copy,长度1bit,编码时设置为0,解码时忽略
-    void setOriginalCopy(unsigned int value = 0);
+    void setOriginalCopy(const unsigned int &value = 0);
 
     //关键字home,长度1bit,编码时设置为0,解码时忽略
-    void setHome(unsigned int value = 0);
+    void setHome(const unsigned int &value = 0);
 
     //关键字copyright_identification_bit,长度1bit,编码时设置为0,解码时忽略
-    void setCopyrightIdentificationBit(unsigned int value = 0);
+    void setCopyrightIdentificationBit(const unsigned int &value = 0);
 
     //关键字copyright_identification_start,长度1bit,编码时设置为0,解码时忽略
-    void setCopyrightIdentificationStart(unsigned int value = 0);
+    void setCopyrightIdentificationStart(const unsigned int &value = 0);
 
     //关键字aac_frame_length,长度13bit,一个ADTS帧的长度(包括ADTS头和AAC原始流)
-    void setAacFrameLength(unsigned int value = 0);
+    void setAacFrameLength(const unsigned int &value = 0);
 
     //关键字adts_buffer_fullness,长度11bit,默认值0x7FF说明是码率可变的码流
-    void setAdtsBufferFullness(unsigned int value = 0x7ff);
+    void setAdtsBufferFullness(const unsigned int &value = 0x7ff);
 
     //关键字number_of_raw_data_blocks_in_frame,长度2bit,表示ADTS帧中有number_of_raw_data_blocks_in_frame + 1个AAC原始帧.
     //所以说number_of_raw_data_blocks_in_frame == 0 表示说ADTS帧中有一个AAC数据块。
     //(一个AAC原始帧包含一段时间内1024个采样及相关数据)
-    void setNumberOfRawDataBlocksInFrame(unsigned int value = 0);
+    void setNumberOfRawDataBlocksInFrame(const unsigned int &value = 0);
+
+    void writeBytes2File(std::ofstream &outStream);
 
 };
 
