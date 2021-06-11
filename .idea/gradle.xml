@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/module_common" />
             <option value="$PROJECT_DIR$/module_fdkaac" />
             <option value="$PROJECT_DIR$/module_ffmpeg" />
+            <option value="$PROJECT_DIR$/module_log" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

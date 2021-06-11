@@ -27,9 +27,9 @@ public abstract class BaseMvpActivity<P extends IBasePresenter>
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mPresenter = createPresenter();
         getLifecycle().addObserver(mPresenter);
-        super.onCreate(savedInstanceState);
         initData();
     }
 

@@ -1,13 +1,16 @@
-def androidDefaultConfig = rootProject.ext.androidDefaultConfig
-def currentModule = rootProject.ext.modules.module_ffmpeg
-def plugins = rootProject.ext.plugins
-def libsVersion = rootProject.ext.libsVersion
-def manifestPath = rootProject.ext.manifestPath
-def CMakePath = rootProject.ext.CMakePath
+ext{
+    androidDefaultConfig = rootProject.ext.androidDefaultConfig
+    currentModule = rootProject.ext.modules.module_common
+    plugins = rootProject.ext.plugins
+    libsVersion = rootProject.ext.libsVersion
+    manifestPath = rootProject.ext.manifestPath
+    projectName = currentModule.projectName
+    moduleName = currentModule.moduleName
+}
 if (currentModule.isRunAlone) {
-    apply plugin: plugins.application
+    apply plugin: project.ext.plugins.application
 } else {
-    apply plugin: plugins.library
+    apply plugin: project.ext.plugins.library
 }
 android {
     compileSdkVersion androidDefaultConfig.compileSdkVersion

@@ -1,0 +1,247 @@
+import groovy.xml.MarkupBuilder
+
+import javax.inject.Inject
+
+android.applicationVariants.all { variant ->//遍历每一个variant
+    if (variant.productFlavors.size() > 0) {
+        variant.productFlavors.each() { flavor ->//遍历每一个flavor
+            println "${moduleName}_package.gradle, variant name is: [${variant.getName()}], flavor name is: [${flavor.getName()}]"
+            def currentFlavorName = flavor.getName()
+            def timestamp = getCurrentTime("yyyyMMddHHmmss")
+            currentFlavorName = [
+                    //apk文件输出路径
+                    outputApkDir    : ".\\package\\${flavor.getName()}\\${variant.buildType.name}",
+                    //输出的apk文件名
+                    outputApkName   : "${projectName.EN}_${moduleName}_${flavor.getName()}_${variant.buildType.name}-${variant.getVersionName()}(${timestamp})",
+                    packageDependsOn: "assemble${variant.getName().capitalize()}",
+            ]
+            //创建版本记录的task
+            tasks.create("${variant.getName()}VersionRecord", VersionRecordTask, flavor.getName(), variant.buildType.name,
+                    String.valueOf(variant.getVersionCode()), variant.getVersionName(), String.valueOf(currentFlavorName.outputApkName),
+                    project.ext.currentModule.versionInfo, timestamp)
+            task "${variant.getName()}Package"(dependsOn: [currentFlavorName.packageDependsOn, /*"${variant.getName()}VersionRecord"*/],
+                    group: "package", description: "${projectName.CN}_${moduleName}_${flavor.getName()}_${variant.buildType.name}版本打包") {
+                //打包任务(package task)执行完成后，启动对应的版本记录任务(version record task)
+                project.tasks.getByName("${variant.getName()}Package").finalizedBy "${variant.getName()}VersionRecord"
+                doLast {
+                    variant.outputs.each { output ->
+                        if (!output.outputFile.name.endsWith('androidTest.apk')) {//非Test产生的apk文件
+                            //APK源文件路径
+                            def srcApkFilePath = output.outputFile.getAbsolutePath()
+                            //APK文件复制到新目录下文件的名称
+                            println "源文件路径：${srcApkFilePath}\n目标文件路径：${currentFlavorName.outputApkDir}\\${currentFlavorName.outputApkName}"
+                            //复制文件到指定目录
+                            copy {
+                                from srcApkFilePath
+                                into currentFlavorName.outputApkDir
+                                rename {
+                                    "${currentFlavorName.outputApkName}.apk"
+                                }
+                            }
+                        }
+                    }
+                    println "${projectName.CN}_${moduleName.CN}打包结束，渠道:【${flavor.getName()}】，构建类型:【${variant.buildType.name}】"
+                }
+            }
+        }
+    } else {
+        println "${moduleName}_package.gradle, variant name is: [${variant.getName()}]"
+        def currentVariantName = variant.getName()
+        def timestamp = getCurrentTime("yyyyMMddHHmmss")
+        currentVariantName = [
+                //apk文件输出路径
+                outputApkDir    : ".\\package\\${variant.buildType.name}",
+                //输出的apk文件名
+                outputApkName   : "${projectName.EN}_${moduleName}_${variant.buildType.name}-${variant.getVersionName()}(${timestamp})",
+                packageDependsOn: "assemble${variant.getName().capitalize()}",//首字母大写
+        ]
+        //创建版本记录的task
+        tasks.create("${variant.getName()}VersionRecord", VersionRecordTask, "", variant.buildType.name,
+                String.valueOf(variant.getVersionCode()), variant.getVersionName(), String.valueOf(currentVariantName.outputApkName),
+                project.ext.currentModule.versionInfo, timestamp)
+        task "${variant.getName()}Package"(dependsOn: [currentVariantName.packageDependsOn, /*"${variant.getName()}VersionRecord"*/],
+                group: "package", description: "${projectName.CN}_${moduleName}_${variant.buildType.name}版本打包") {
+            //打包任务(package task)执行完成后，启动对应的版本记录任务(version record task)
+            project.tasks.getByName("${variant.getName()}Package").finalizedBy "${variant.getName()}VersionRecord"
+            doLast {
+                variant.outputs.each { output ->
+                    if (!output.outputFile.name.endsWith('androidTest.apk')) {//非Test产生的apk文件
+                        //APK源文件路径
+                        def srcApkFilePath = output.outputFile.getAbsolutePath()
+                        //APK文件复制到新目录下文件的名称
+                        println "源文件路径：${srcApkFilePath}\n目标文件路径：${currentVariantName.outputApkDir}\\${currentVariantName.outputApkName}"
+                        //复制文件到指定目录
+                        copy {
+                            from srcApkFilePath
+                            into currentVariantName.outputApkDir
+                            rename {
+                                "${currentVariantName.outputApkName}.apk"
+                            }
+                        }
+                    }
+                }
+                println "${projectName.CN}_${moduleName.CN}打包结束，构建类型:【${variant.buildType.name}】"
+            }
+        }
+    }
+}
+
+
+class VersionRecordTask extends DefaultTask {
+    String mFlavorName
+    String mBuildType
+    String mVersionCode
+    String mVersionName
+    String mApkName
+    String mVersionInfo
+    String mTimestamp
+    File mPackageFileDir
+    File mVersionRecordHistoryFile
+    // 添加构造参数
+    @Inject
+    VersionRecordTask(String flavorName, String buildType, String versionCode, String versionName,
+                      String apkName, String versionInfo, String timestamp) {
+        this.mFlavorName = flavorName
+        this.mBuildType = buildType
+        this.mVersionCode = versionCode
+        this.mVersionName = versionName
+        this.mApkName = apkName
+        this.mVersionInfo = versionInfo
+        this.mTimestamp = timestamp
+        println "VersionRecordTask constructor(), ${mFlavorName}||${mBuildType}||${mVersionCode}||${mVersionName}||${mApkName}||${mVersionInfo}||${mTimestamp}"
+        mPackageFileDir = new File(project.getProjectDir(), "package/${mFlavorName}/${mBuildType}")
+        if (!mPackageFileDir.exists()) {
+            mPackageFileDir.mkdirs()
+        }
+    }
+
+    @TaskAction
+    def action() {
+        writeLatestVersionRecord()
+        separateVersionRecord()
+    }
+    /**
+     * 分离最新的版本记录为单个文件
+     */
+    void separateVersionRecord() {
+        println "VersionRecordTask separateVersionRecord(),\n${this.toString()}"
+        def separateVersionRecordFile = new File(mPackageFileDir, "${mApkName}.txt")
+        if (!separateVersionRecordFile.exists())
+            separateVersionRecordFile.createNewFile()
+        def releases = new XmlParser().parse(new InputStreamReader(new FileInputStream(mVersionRecordHistoryFile), 'utf-8'))
+        releases.release.each { releaseNode ->
+            //解析每个release节点的内容
+            def flavorName = releaseNode.flavorName.text()
+            def buildType = releaseNode.buildType.text()
+            def versionCode = releaseNode.versionCode.text()
+            def versionName = releaseNode.versionName.text()
+            def apkName = releaseNode.apkName.text()
+            def versionInfo = releaseNode.versionInfo.text()
+            def timestamp = releaseNode.timestamp.text()
+            separateVersionRecordFile.withWriter() { writer ->
+                writer.write("""flavorName: ${flavorName}\r\nbuildType: ${
+                    buildType
+                }\r\nversionCode: ${versionCode}\r\nversionName: ${versionName}\r\napkName: ${
+                    apkName
+                }\r\ntimestamp: ${timestamp}\r\nversionInfo: ${versionInfo}""")
+            }
+        }
+    }
+    /**
+     * 写入最新的版本记录
+     */
+    void writeLatestVersionRecord() {
+        println "VersionRecordTask writeLatestVersionRecord(),\n${this.toString()}"
+        mVersionRecordHistoryFile = new File(mPackageFileDir, "version_record_${mFlavorName}_${mBuildType}.xml")
+        if (!mVersionRecordHistoryFile.exists())
+            mVersionRecordHistoryFile.createNewFile()
+
+        def versionRecord = new VersionRecord(mFlavorName, mBuildType, mVersionCode, mVersionName, mApkName, mVersionInfo, mTimestamp)
+        def stringWriter = new StringWriter()
+        def xmlBuilder = new MarkupBuilder(stringWriter)
+        //发版记录文件中没有内容
+        if (mVersionRecordHistoryFile.text != null && mVersionRecordHistoryFile.text.size() <= 0) {
+            println "==============has no version record history=============="
+            xmlBuilder.releases {
+                release {
+                    flavorName(versionRecord.flavorName)
+                    buildType(versionRecord.buildType)
+                    versionCode(versionRecord.versionCode)
+                    versionName(versionRecord.versionName)
+                    apkName("${versionRecord.apkName}.apk")
+                    timestamp(versionRecord.timestamp)
+                    versionInfo(versionRecord.versionInfo)
+                }
+            }
+            mVersionRecordHistoryFile.withWriter { writer ->
+                writer.append(stringWriter.toString())
+            }
+        } else { //已有版本信息
+            println "==============has version record history=============="
+            xmlBuilder.release {
+                flavorName(versionRecord.flavorName)
+                buildType(versionRecord.buildType)
+                versionCode(versionRecord.versionCode)
+                versionName(versionRecord.versionName)
+                apkName("${versionRecord.apkName}.apk")
+                timestamp(versionRecord.timestamp)
+                versionInfo(versionRecord.versionInfo)
+            }
+            //将新生成的xml数据插入到根节点之前
+            def lines = mVersionRecordHistoryFile.readLines()
+            def linesLength = lines.size() - 1
+            mVersionRecordHistoryFile.withWriter { writer ->
+                lines.eachWithIndex { String line, int index ->
+                    if (index != linesLength) {
+                        writer.append(line + "\r\n")
+                    } else if (index == linesLength) {
+                        writer.append("\r\n" + stringWriter.toString() + "\r\n")
+                        writer.append(lines.get(linesLength))
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Override
+    String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"mFlavorName\":\"")
+                .append(mFlavorName).append('\"');
+        sb.append(",\"mBuildType\":\"")
+                .append(mBuildType).append('\"');
+        sb.append(",\"mVersionCode\":\"")
+                .append(mVersionCode).append('\"');
+        sb.append(",\"mVersionName\":\"")
+                .append(mVersionName).append('\"');
+        sb.append(",\"mApkName\":\"")
+                .append(mApkName).append('\"');
+        sb.append(",\"mVersionInfo\":\"")
+                .append(mVersionInfo).append('\"');
+        sb.append(",\"mTimestamp\":\"")
+                .append(mTimestamp).append('\"');
+        sb.append('}');
+        return sb.toString();
+    }
+}
+
+class VersionRecord {
+    String flavorName
+    String buildType
+    String versionCode
+    String versionName
+    String apkName
+    String versionInfo
+    String timestamp
+
+    VersionRecord(String flavorName, String buildType, String versionCode, String versionName, String apkName, String versionInfo, String timestamp) {
+        this.flavorName = flavorName
+        this.buildType = buildType
+        this.versionCode = versionCode
+        this.versionName = versionName
+        this.apkName = apkName
+        this.versionInfo = versionInfo
+        this.timestamp = timestamp
+    }
+}
