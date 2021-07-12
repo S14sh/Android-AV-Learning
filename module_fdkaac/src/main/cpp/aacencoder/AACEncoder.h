@@ -26,9 +26,9 @@ extern "C"
 * HE-V2-AAC: 主要应用于低码率场景的编码 (<= 48KBit/s)
 */
 typedef enum {
-    LC_AAC = 2;
-    HE_AAC = 5;
-    LC_v2_AAC = 29;
+    LC_AAC = 2,
+    HE_AAC = 5,
+    LC_v2_AAC = 29
 } AACProfile;
 
 const char *fdkaac_error(AACENC_ERROR erraac) {

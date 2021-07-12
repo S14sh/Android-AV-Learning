@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.android.module_log.util.LogUtil;
+
 import util.FfmpegUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -15,7 +17,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Example of a call to a native method
         TextView tv = findViewById(R.id.sample_text);
-        tv.setText(FfmpegUtil.getInstance().getFfmpegVersion());
+//        tv.setText(FfmpegUtil.instance.getFfmpegVersion());
+        LogUtil.instance.setLogLevel(LogUtil.LogLevel.VERBOSE);
+        LogUtil.instance.d(null, "yes");
     }
 
 }

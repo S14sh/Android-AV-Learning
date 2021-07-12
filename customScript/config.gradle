@@ -16,6 +16,7 @@ ext {
             androidxjunitVersion   : "1.1.2",
             espressoCoreVersion    : "3.3.0",
             lifecycleVersion       : "2.2.0",
+            gsonVersion            : "2.8.7",
     ]
     modules = [
             module_log   : [
@@ -67,7 +68,7 @@ ext {
                     appName       : "主应用程序框架",//应用名称
                     module_name   : "app",
                     resourcePrefix: "app",//资源名前缀约束
-                    versionInfo:"初始测试版本",
+                    versionInfo   : "初始测试版本",
             ]
     ]
     //签名配置
@@ -78,8 +79,15 @@ ext {
             library    : "src/main/moduleManifest/AndroidManifest.xml"
     ]
 
-    CMakePath = [
-            path: "src/main/cpp/CMakeLists.txt"
+    javaVersion = [
+            sourceVersion: JavaVersion.VERSION_1_8,
+            targetVersion: JavaVersion.VERSION_1_8
+    ]
+
+    cMake = [
+            path      : "src/main/cpp/CMakeLists.txt",
+            cppFlags  : "-std=c++17",
+            abiFilters: [v8: "arm64-v8a", v7: "armeabi-v7a"],
     ]
 
     getCurrentTime = this.&getCurrentTime

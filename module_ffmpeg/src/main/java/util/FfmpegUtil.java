@@ -1,26 +1,12 @@
 package util;
 
-public class FfmpegUtil {
+public enum FfmpegUtil {
+
+    instance;
 
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-ffmpeg-lib");
-    }
-
-    private static volatile FfmpegUtil instance;
-
-    private FfmpegUtil(){
-
-    }
-
-    public static FfmpegUtil getInstance(){
-        if(instance == null){
-            synchronized (FfmpegUtil.class){
-                if(instance == null)
-                    instance = new FfmpegUtil();
-            }
-        }
-        return instance;
     }
 
     /**
