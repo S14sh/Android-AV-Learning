@@ -20,10 +20,10 @@ FILE(GLOB AAC_ENCODER_H ${CMAKE_SOURCE_DIR}/aacencoder/*.h)
 FILE(GLOB AAC_DECODER_CPP ${CMAKE_SOURCE_DIR}/aacdecoder/*.cpp)
 FILE(GLOB AAC_DECODER_H ${CMAKE_SOURCE_DIR}/aacdecoder/*.h)
 
-include_directories(${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI}/include)
-include_directories(${CMAKE_SOURCE_DIR}/adtshead)
-include_directories(${CMAKE_SOURCE_DIR}/aacencoder)
-include_directories(${CMAKE_SOURCE_DIR}/aacdecoder)
+include_directories(${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI}/include/)
+include_directories(${CMAKE_SOURCE_DIR}/adtshead/)
+include_directories(${CMAKE_SOURCE_DIR}/aacencoder/)
+include_directories(${CMAKE_SOURCE_DIR}/aacdecoder/)
 include_directories(${NATIVE_FDKAAC_LIB_H})
 include_directories(${ADTS_HEAD_H})
 include_directories(${AAC_ENCODER_H})
@@ -45,7 +45,6 @@ add_library( # Sets the name of the library.
         ${ADTS_HEAD_CPP}
         ${AAC_ENCODER_CPP}
         ${AAC_DECODER_CPP})
-
 
 
 add_library(fdk-aac STATIC IMPORTED)

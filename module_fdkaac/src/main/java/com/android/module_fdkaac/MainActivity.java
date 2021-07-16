@@ -14,6 +14,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView textView = findViewById(R.id.fdkaac_main_text);
-        textView.setText(FdkAacUtil.getInstance().getFdkAacVersion());
+        textView.setText(FdkAacUtil.instance.getFdkAacVersion());
     }
 }

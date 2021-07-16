@@ -138,6 +138,8 @@ public:
     void addADTS2Packet(const int &packetLen, const int &profile = 1, const int &freqIdx = 4,
                         const int &chanCfg = 1);
 
+    int getEncoderInfo(const AACENC_InfoStruct *info);
+
     /**
      * 将AAC数据写入文件
      * @param data AAC裸流

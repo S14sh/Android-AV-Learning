@@ -1,5 +1,6 @@
 #include "native-fdkaac-lib.h"
 #include <string>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,11 +16,11 @@ jstring Java_util_FdkAacUtil_getFdkAacVersion(JNIEnv *env, jobject thiz) {
  * @param pVoid
  * @return
  */
-jint JNI_OnLoad(JavaVM *javaVm, void *pVoid){
+jint JNI_OnLoad(JavaVM *javaVm, void *pVoid) {
     JNIEnv *jniEnv;
-    if(javaVm->GetEnv(reinterpret_cast<void **>(&jniEnv), JNI_VERSION_1_6) != JNI_OK)
+    //出现错误
+    if (javaVm->GetEnv(reinterpret_cast<void **>(&jniEnv), JNI_VERSION_1_6) != JNI_OK)
         return JNI_ERR;
-
     return JNI_VERSION_1_6;
 }
 

@@ -1,11 +1,13 @@
-#include "AACEncoder.h"
+#include <AACEncoder.h>
 
 AACEncoder::AACEncoder() {
 
 }
 
 AACEncoder::~AACEncoder() {
+    //删除开辟的内存空间
     delete[] mInBuffer;
+    //关闭文件
     outStream.close();
 }
 
@@ -58,7 +60,7 @@ int AACEncoder::init(const std::string &name, const AACProfile &profile, const i
     if (this->isFlagGlobalHeader)
         //没有任何格式的封装
         encode_mode = TT_MP4_RAW;
-    //设置编码输出的格式数据带AAC ADTS头
+    //设置编码输出的格式数据是否带AAC ADTS头
     if ((err = aacEncoder_SetParam(this->mAacEncoder, AACENC_TRANSMUX, encode_mode)) != AACENC_OK) {
         LOGE("Unable to set the ADTS AACENC_TRANSMUX, ERR = 0x%x, error is %s\n", err,
              fdkaac_error(err));
@@ -72,13 +74,6 @@ int AACEncoder::init(const std::string &name, const AACProfile &profile, const i
         destory();
         return err;
     }
-    //获取编码器信息
-    if ((err = aacEncInfo(this->mAacEncoder, &this->mEncInfo)) != AACENC_OK) {
-        LOGE("Unable to get the aacEncInfo info, err = 0x%x, error is %s\n", err,
-             fdkaac_error(err));
-        destory();
-        return err;
-    }
 
     this->isFlagGlobalHeader = isOutputWithoutADTS;
 
@@ -88,6 +83,7 @@ int AACEncoder::init(const std::string &name, const AACProfile &profile, const i
     //偏移量
     this->mInBufferCursor = 0;
     this->mInBuffer = new uint8_t[this->mInputSizeFixed];
+    //重新开辟内存空间，用以存储加入新内容后的数据
     memset(this->mInBuffer, 0, sizeof(this->mInBuffer));
     //如果是编码裸流，可以取出编码器的SpecInfo
     this->outStream.open(name + ".aac", std::ios::out | std::ios::trunc);
@@ -130,7 +126,6 @@ int AACEncoder::encode(const Byte *const pData, int dataByteSize, char **outBuff
     }
     return packetSize;
 }
-
 
 int AACEncoder::fdkEncoderAudio() {
 
@@ -211,13 +206,26 @@ void AACEncoder::addADTS2Packet(const int &packetLen, const int &profile, const 
     //profile默认为AAC LC, freqIdx默认为44.1KHz, chanCfg默认为单通道
     ADTSHead adtsHead;
     /* adts_fixed_header */
-    adtsHead.setProfile(profile);
-    adtsHead.setSamplingFrequencyIndex(freqIdx);
-    adtsHead.setChannelConfiguration(chanCfg);
-    /* adts_variable_header */
-    adtsHead.setAacFrameLength(packetLen);
-    /* 将ADTS头写入文件中 */
-    adtsHead.writeBytes2File(this->outStream);
+    adtsHead.setProfile(profile)
+            .setSamplingFrequencyIndex(freqIdx)
+            .setChannelConfiguration(chanCfg)
+                    /* adts_variable_header */
+            .setAacFrameLength(packetLen)
+                    /* 将ADTS头写入文件中 */
+            .writeBytes2File(this->outStream);
+}
+
+int AACEncoder::getEncoderInfo(const AACENC_InfoStruct *info) {
+    AACENC_ERROR err;
+    //获取编码器信息
+    if ((err = aacEncInfo(this->mAacEncoder, &this->mEncInfo)) != AACENC_OK) {
+        LOGE("Unable to get the aacEncInfo info, err = 0x%x, error is %s\n", err,
+             fdkaac_error(err));
+        destory();
+        return err;
+    }
+    info = &this->mEncInfo;
+    return AACENC_OK;
 }
 
 void AACEncoder::destory() {
