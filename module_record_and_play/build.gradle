@@ -25,13 +25,8 @@ android {
         targetSdkVersion androidDefaultConfig.targetSdkVersion
         versionCode currentModule.versionCode
         versionName currentModule.versionName
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        externalNativeBuild {
-            cmake {
-                cppFlags cMake.cppFlags
-                abiFilters cMake.abiFilters.v8, cMake.abiFilters.v7
-            }
-        }
     }
 
     buildTypes {
@@ -39,22 +34,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug {
-            debuggable true
-        }
     }
     compileOptions {
         sourceCompatibility javaVersion.sourceVersion
         targetCompatibility javaVersion.targetVersion
     }
-
-    externalNativeBuild {
-        cmake {
-            path cMake.path
-            version libsVersion.CMakeVersion
-        }
-    }
-
     sourceSets {
         main {
             if (currentModule.isRunAlone) {
@@ -64,7 +48,6 @@ android {
             }
         }
     }
-
 }
 
 dependencies {

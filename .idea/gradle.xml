@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/module_fdkaac" />
             <option value="$PROJECT_DIR$/module_ffmpeg" />
             <option value="$PROJECT_DIR$/module_log" />
+            <option value="$PROJECT_DIR$/module_record_and_play" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -29,6 +29,7 @@ public:
 
     virtual ~AACDecoder();
 
+    //AAC流数据格式及解码流程见 https://www.cnblogs.com/lidabo/p/7234671.html
     int initWithRawFormat(unsigned char *specInfo, unsigned int specInfoSize);
 
     int initWithADTSFormat();

@@ -1,3 +1,4 @@
+include ':module_record_and_play'
 include ':module_log'
 include ':module_fdkaac'
 include ':module_common'
