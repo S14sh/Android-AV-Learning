@@ -7,7 +7,7 @@ import android.media.AudioTrack;
 import android.os.Build;
 import android.util.Log;
 
-public enum AudioTrackUtil {
+public enum RecordPlayUtil {
 
     instance;
 
@@ -25,11 +25,11 @@ public enum AudioTrackUtil {
     private volatile int mStatus = STATUS_NOT_READY;
     private String mFilePath;
 
-    public void createAudioTrack(String path) throws IllegalStateException {
+    public void createAudioTrack(String path) {
         mFilePath = path;
         mBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT);
         if (mBufferSize <= 0)
-            throw new IllegalStateException("AudioTrack is not available because of bufferSize is " + mBufferSize);
+            Log.e(TAG, "createAudioTrack: " + "AudioTrack is not available because of bufferSize is " + mBufferSize);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mAudioTrack = new AudioTrack.Builder()
                     .setAudioAttributes(new AudioAttributes.Builder()
@@ -51,11 +51,14 @@ public enum AudioTrackUtil {
         mStatus = STATUS_READY;
     }
 
-    public void startPlay() throws IllegalStateException {
-        if (mStatus == STATUS_NOT_READY || mAudioTrack == null)
-            throw new IllegalStateException("播放器尚未初始化");
-        else if (mStatus == STATUS_START)
-            throw new IllegalStateException("播放器正在播放...");
+    public void startPlay() {
+        if (mStatus == STATUS_NOT_READY || mAudioTrack == null) {
+            Log.e(TAG, "startPlay: " + "播放器尚未初始化");
+            return;
+        } else if (mStatus == STATUS_START) {
+            Log.e(TAG, "startPlay: " + "播放器正在播放...");
+            return;
+        }
         new Thread(() -> {
             try {
                 if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)

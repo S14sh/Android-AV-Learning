@@ -3,6 +3,7 @@ package com.android.module_record_and_play.util;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ public enum RecordUtil {
 
     instance;
 
+    private final String TAG = getClass().getSimpleName();
     private final int FREQUENCY = 44100;
 
     private AudioRecord mAudioRecord = null;
@@ -20,8 +22,13 @@ public enum RecordUtil {
     private boolean mIsRecording = false;
 
     public void createAudioRecord() {
-        mRecordBuffSize = AudioRecord.getMinBufferSize(FREQUENCY, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT);
-        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT, mRecordBuffSize);
+        int bufferSize = AudioRecord.getMinBufferSize(FREQUENCY, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT);
+        createAudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+    }
+
+    public void createAudioRecord(int audioSource, int sampleRate, int channelConfig, int audioFormat, int bufferSize) {
+        mRecordBuffSize = bufferSize;
+        mAudioRecord = new AudioRecord(audioSource, sampleRate, channelConfig, audioFormat, bufferSize);
         mData = new byte[mRecordBuffSize];
     }
 
@@ -37,7 +44,7 @@ public enum RecordUtil {
         try {
             fileOutputStream = new FileOutputStream(fileName);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "write2File: file open error!!! " + e.getMessage() + ' ' + e);
         }
         if (null != fileOutputStream) {
             while (mIsRecording) {
@@ -46,14 +53,14 @@ public enum RecordUtil {
                     try {
                         fileOutputStream.write(mData);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "write2File: write file error!!! " + e.getMessage() + ' ' + e);
                     }
                 }
             }
             try {
                 fileOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "write2File: file close error!!! " + e.getMessage() + ' ' + e);
             }
         }
     }
