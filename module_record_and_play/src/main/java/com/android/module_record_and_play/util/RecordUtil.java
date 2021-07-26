@@ -70,7 +70,7 @@ public enum RecordUtil {
         FileOutputStream fileOutputStream = null;
         int result = 0;
         try {
-            fileOutputStream = new FileOutputStream(fileName);
+            fileOutputStream = new FileOutputStream(mContext.getExternalCacheDir().getAbsolutePath() + fileName);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "write2File: file open error!!! " + e.getMessage() + ' ' + e);
         }

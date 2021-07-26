@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == R.id.record_and_play_stopRecord) {
             RecordUtil.instance.stopRecording();
         } else if (v.getId() == R.id.record_and_play_startPlay) {
-            RecordPlayUtil.instance.createAudioTrack("test1");
-            RecordPlayUtil.instance.startPlay();
+            RecordPlayUtil.instance.createAudioTrack(this);
+            RecordPlayUtil.instance.startPlay("test1");
         } else if (v.getId() == R.id.record_and_play_stopPlay) {
             RecordPlayUtil.instance.stopPlay();
         }
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 0) {
-            for(int result : grantResults) {
+            for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "未获得必要权限，应用无法正常运行！", Toast.LENGTH_SHORT).show();
                     finish();

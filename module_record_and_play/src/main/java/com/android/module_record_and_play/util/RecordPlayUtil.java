@@ -1,10 +1,12 @@
 package com.android.module_record_and_play.util;
 
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -33,12 +35,13 @@ public enum RecordPlayUtil {
     private AudioTrack mAudioTrack;
     private volatile int mStatus = STATUS_NOT_READY;
     private String mFilePath;
+    private Context mContext;
     // 单任务线程池
     private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
     private StateChangeListener mStateChangeListener = null;
 
-    public void createAudioTrack(String path) {
-        mFilePath = path;
+    public void createAudioTrack(Context context) {
+        mContext = context;
         mBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT);
         if (mBufferSize <= 0)
             Log.e(TAG, "createAudioTrack: " + "AudioTrack is not available because of bufferSize is " + mBufferSize);
@@ -63,7 +66,12 @@ public enum RecordPlayUtil {
         mStatus = STATUS_READY;
     }
 
-    public void startPlay() {
+    public void startPlay(String path) {
+        if (TextUtils.isEmpty(path)) {
+            Log.e(TAG, "startPlay: filePath is empty!!!");
+            return;
+        }
+        mFilePath = path;
         if (mStatus == STATUS_NOT_READY || mAudioTrack == null) {
             Log.e(TAG, "startPlay: " + "播放器尚未初始化");
             return;
@@ -76,7 +84,7 @@ public enum RecordPlayUtil {
             int length = 0;
             InputStream is = null;
             try {
-                is = new DataInputStream(new BufferedInputStream(new FileInputStream(mFilePath)));
+                is = new DataInputStream(new BufferedInputStream(new FileInputStream(mContext.getExternalCacheDir().getAbsolutePath() + mFilePath)));
                 if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
                     Log.e(TAG, "startPlay: 开始播放");
                     mAudioTrack.play();

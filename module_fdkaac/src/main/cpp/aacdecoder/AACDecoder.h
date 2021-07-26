@@ -3,6 +3,7 @@
 
 #include <aacdecoder_lib.h>
 #include <android/log.h>
+#include <memory>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,6 +15,9 @@ extern "C"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #endif
+
+//1秒44.1khz 16bit
+#define FDK_MAX_AUDIO_FRAME_SIZE 8820
 
 class AACDecoder {
 private:
@@ -37,6 +41,7 @@ public:
     int decode(unsigned char *pck, int len, unsigned char **outBuffer);
 
     void destroy();
+
 private:
 
     void printAACInfo();
@@ -50,5 +55,4 @@ private:
 #ifdef __cplusplus
 }
 #endif
-
 #endif //ANDROID_AV_LEARNING_AACDECODER_H

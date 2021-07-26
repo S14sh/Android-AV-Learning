@@ -1,4 +1,4 @@
-ext {
+ext{
     androidDefaultConfig = rootProject.ext.androidDefaultConfig
     currentModule = rootProject.ext.modules.app
     plugins = rootProject.ext.plugins
