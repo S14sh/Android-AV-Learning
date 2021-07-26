@@ -1,6 +1,6 @@
 ext{
     androidDefaultConfig = rootProject.ext.androidDefaultConfig
-    currentModule = rootProject.ext.modules.module_common
+    currentModule = rootProject.ext.modules.module_log
     plugins = rootProject.ext.plugins
     libsVersion = rootProject.ext.libsVersion
     manifestPath = rootProject.ext.manifestPath

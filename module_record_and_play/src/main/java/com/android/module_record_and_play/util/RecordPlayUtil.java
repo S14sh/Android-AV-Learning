@@ -7,6 +7,15 @@ import android.media.AudioTrack;
 import android.os.Build;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+//播放录音单例类
 public enum RecordPlayUtil {
 
     instance;
@@ -24,6 +33,9 @@ public enum RecordPlayUtil {
     private AudioTrack mAudioTrack;
     private volatile int mStatus = STATUS_NOT_READY;
     private String mFilePath;
+    // 单任务线程池
+    private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private StateChangeListener mStateChangeListener = null;
 
     public void createAudioTrack(String path) {
         mFilePath = path;
@@ -59,18 +71,69 @@ public enum RecordPlayUtil {
             Log.e(TAG, "startPlay: " + "播放器正在播放...");
             return;
         }
-        new Thread(() -> {
+        mExecutorService.execute(() -> {
+            byte[] bytes = new byte[mBufferSize];
+            int length = 0;
+            InputStream is = null;
             try {
-                if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
+                is = new DataInputStream(new BufferedInputStream(new FileInputStream(mFilePath)));
+                if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
+                    Log.e(TAG, "startPlay: 开始播放");
                     mAudioTrack.play();
+                    if (mStateChangeListener != null)
+                        mStateChangeListener.OnPlayStart();
+                }
+                while ((length = is.read(bytes)) != -1 && mStatus == STATUS_START) {
+                    //write方法会阻塞
+                    mAudioTrack.write(bytes, 0, length);
+                }
+                Log.e(TAG, "startPlay: 播放结束！");
             } catch (Exception e) {
                 Log.e(TAG, "startPlay: 播放出错" + ' ' + e.getMessage() + e);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "startPlay: inputStream close error!!!");
+                    }
+                }
             }
-        }).start();
+        });
         mStatus = STATUS_START;
     }
 
     public void stopPlay() {
+        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY)
+            Log.e(TAG, "stopPlay: 播放器尚未播放");
+        else {
+            mStatus = STATUS_STOP;
+            mAudioTrack.stop();
+            if (mStateChangeListener != null)
+                mStateChangeListener.OnPlayStop();
+            release();
+        }
+    }
+
+    public void release() {
+        mStatus = STATUS_NOT_READY;
+        if (mAudioTrack != null) {
+            mAudioTrack.release();
+            mAudioTrack = null;
+            mStateChangeListener = null;
+        }
+    }
+
+    void setStateChangeListener(StateChangeListener listener) {
+        mStateChangeListener = listener;
+    }
+
+    interface StateChangeListener {
+
+        void OnPlayStart();
+
+        void OnPlayStop();
 
     }
+
 }
