@@ -1,67 +1,9 @@
 ext{
-    androidDefaultConfig = rootProject.ext.androidDefaultConfig
     currentModule = rootProject.ext.modules.app
-    plugins = rootProject.ext.plugins
-    libsVersion = rootProject.ext.libsVersion
-    manifestPath = rootProject.ext.manifestPath
-    projectName = currentModule.projectName
-    moduleName = currentModule.moduleName
 }
-if (currentModule.isRunAlone) {
-    apply plugin: project.ext.plugins.application
-} else {
-    apply plugin: project.ext.plugins.library
-}
-android {
-    compileSdkVersion androidDefaultConfig.compileSdkVersion
-    buildToolsVersion androidDefaultConfig.buildToolsVersion
-
-    defaultConfig {
-        if (currentModule.isRunAlone) {
-            applicationId currentModule.applicationId
-        }
-        minSdkVersion androidDefaultConfig.minSdkVersion
-        targetSdkVersion androidDefaultConfig.targetSdkVersion
-        versionCode currentModule.versionCode
-        versionName currentModule.versionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            debuggable true
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-
-        }
-    }
-    compileOptions {
-        sourceCompatibility javaVersion.sourceVersion
-        targetCompatibility javaVersion.targetVersion
-    }
-
-    sourceSets {
-        main {
-            if (currentModule.isRunAlone) {
-                manifest.srcFile manifestPath.application
-            } else {
-                manifest.srcFile manifestPath.library
-            }
-        }
-    }
-
-}
+apply from: this.file("${this.getRootDir()}/customScript/common_config.gradle")
 
 dependencies {
-
-    implementation "androidx.appcompat:appcompat:$libsVersion.appcompatVersion"
-    implementation "com.google.android.material:material:$libsVersion.materialVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$libsVersion.constraintlayoutVersion"
-    testImplementation "junit:junit:$libsVersion.junitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$libsVersion.androidxjunitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$libsVersion.espressoCoreVersion"
     def isModuleCommonRunAlone = rootProject.modules.module_common.isRunAlone
     if (!isModuleCommonRunAlone)
         api project(path: ':module_common')
@@ -69,9 +11,4 @@ dependencies {
     if (!isModuleFfmpegRunAlone)
         api project(path: ':module_ffmpeg')
     api project(path: ':module_log')
-}
-
-if (currentModule.isRunAlone) {
-    //引入Apk打包脚本
-    apply from: this.file("${this.getRootDir()}/customScript/common_package.gradle")
 }

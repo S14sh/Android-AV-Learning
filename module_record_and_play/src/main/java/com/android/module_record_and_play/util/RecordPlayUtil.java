@@ -40,6 +40,11 @@ public enum RecordPlayUtil {
     private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
     private StateChangeListener mStateChangeListener = null;
 
+    /**
+     * 初始化audioTrack（默认值）
+     *
+     * @param context
+     */
     public void createAudioTrack(Context context) {
         mContext = context;
         mBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT);
@@ -66,6 +71,11 @@ public enum RecordPlayUtil {
         mStatus = STATUS_READY;
     }
 
+    /**
+     * 开始播放
+     *
+     * @param path
+     */
     public void startPlay(String path) {
         if (TextUtils.isEmpty(path)) {
             Log.e(TAG, "startPlay: filePath is empty!!!");
@@ -79,38 +89,45 @@ public enum RecordPlayUtil {
             Log.e(TAG, "startPlay: " + "播放器正在播放...");
             return;
         }
-        mExecutorService.execute(() -> {
-            byte[] bytes = new byte[mBufferSize];
-            int length = 0;
-            InputStream is = null;
-            try {
-                is = new DataInputStream(new BufferedInputStream(new FileInputStream(mContext.getExternalCacheDir().getAbsolutePath() + mFilePath)));
-                if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
-                    Log.e(TAG, "startPlay: 开始播放");
-                    mAudioTrack.play();
-                    if (mStateChangeListener != null)
-                        mStateChangeListener.OnPlayStart();
-                }
-                while ((length = is.read(bytes)) != -1 && mStatus == STATUS_START) {
-                    //write方法会阻塞
-                    mAudioTrack.write(bytes, 0, length);
-                }
-                Log.e(TAG, "startPlay: 播放结束！");
-            } catch (Exception e) {
-                Log.e(TAG, "startPlay: 播放出错" + ' ' + e.getMessage() + e);
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "startPlay: inputStream close error!!!");
-                    }
-                }
-            }
-        });
+        mExecutorService.execute(() -> playPCMFromFile());
         mStatus = STATUS_START;
     }
 
+    /**
+     * 从文件中播放pcm格式的数据
+     */
+    private void playPCMFromFile() {
+        byte[] bytes = new byte[mBufferSize];
+        int length = 0;
+        InputStream is = null;
+        try {
+            is = new DataInputStream(new BufferedInputStream(new FileInputStream(mContext.getExternalCacheDir().getAbsolutePath() + mFilePath)));
+            if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
+                mAudioTrack.play();
+                if (mStateChangeListener != null)
+                    mStateChangeListener.OnPlayStart();
+            }
+            while ((length = is.read(bytes)) != -1 && mStatus == STATUS_START) {
+                //write方法会阻塞
+                mAudioTrack.write(bytes, 0, length);
+            }
+            Log.e(TAG, "startPlay: 播放结束！");
+        } catch (Exception e) {
+            Log.e(TAG, "startPlay: 播放出错" + ' ' + e.getMessage() + e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "startPlay: inputStream close error!!!");
+                }
+            }
+        }
+    }
+
+    /**
+     * 停止播放
+     */
     public void stopPlay() {
         if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY)
             Log.e(TAG, "stopPlay: 播放器尚未播放");
@@ -123,6 +140,9 @@ public enum RecordPlayUtil {
         }
     }
 
+    /**
+     * 释放audioTrack
+     */
     public void release() {
         mStatus = STATUS_NOT_READY;
         if (mAudioTrack != null) {
@@ -132,10 +152,18 @@ public enum RecordPlayUtil {
         }
     }
 
+    /**
+     * 设置状态回调
+     *
+     * @param listener
+     */
     void setStateChangeListener(StateChangeListener listener) {
         mStateChangeListener = listener;
     }
 
+    /**
+     * 开始播放和停止播放的回调
+     */
     interface StateChangeListener {
 
         void OnPlayStart();

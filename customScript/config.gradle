@@ -28,6 +28,7 @@ ext {
                     module_name   : "log",
                     appName       : "日志工具",//应用名称
                     resourcePrefix: "log",//资源名前缀约束
+                    versionInfo   : "初始测试版本",
             ],
             module_ffmpeg         : [
                     isRunAlone    : false,
@@ -38,6 +39,7 @@ ext {
                     module_name   : "ffmpeg",
                     appName       : "ffmpeg库",//应用名称
                     resourcePrefix: "ffmpeg",//资源名前缀约束
+                    versionInfo   : "初始测试版本",
             ],
             module_common         : [
                     isRunAlone    : false,
@@ -48,6 +50,7 @@ ext {
                     module_name   : "common",
                     appName       : "基类库",//应用名称
                     resourcePrefix: "common",//资源名前缀约束
+                    versionInfo   : "初始测试版本",
             ],
             module_fdkaac         : [
                     isRunAlone    : true,
@@ -58,6 +61,7 @@ ext {
                     module_name   : "fdkaac",
                     appName       : "fdkaac库",//应用名称
                     resourcePrefix: "fdkaac",//资源名前缀约束
+                    versionInfo   : "初始测试版本",
             ],
             module_record_and_play: [
                     isRunAlone    : true,
@@ -68,6 +72,7 @@ ext {
                     module_name   : "record_and_play",
                     appName       : "android录音及播放",//应用名称
                     resourcePrefix: "record_and_play",//资源名前缀约束
+                    versionInfo   : "初始测试版本",
             ],
             app                   : [
                     isRunAlone    : true,

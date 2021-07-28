@@ -1,0 +1,74 @@
+ext {
+    projectName = currentModule.projectName
+    moduleName = currentModule.moduleName
+}
+if (currentModule.isRunAlone) {
+    apply plugin: rootProject.ext.plugins.application
+} else {
+    apply plugin: rootProject.ext.plugins.library
+}
+android {
+    compileSdkVersion androidDefaultConfig.compileSdkVersion
+    buildToolsVersion androidDefaultConfig.buildToolsVersion
+
+    defaultConfig {
+        if (currentModule.isRunAlone) {
+            applicationId currentModule.applicationId
+        }
+        minSdkVersion androidDefaultConfig.minSdkVersion
+        targetSdkVersion androidDefaultConfig.targetSdkVersion
+        versionCode currentModule.versionCode
+        versionName currentModule.versionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled true  //是否混淆
+            zipAlignEnabled true //让安装包中的资源按4字节对齐，这样可以减少应用在运行时的内存消耗
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //是否是Debug版本
+            buildConfigField "boolean", "IS_RELEASE", "true"
+            buildConfigField "boolean", "IS_DEBUG", "false"
+        }
+        debug {
+            debuggable true
+            minifyEnabled false //是否混淆
+            zipAlignEnabled true //让安装包中的资源按4字节对齐，这样可以减少应用在运行时的内存消耗
+            //是否是Debug版本
+            buildConfigField "boolean", "IS_RELEASE", "false"
+            buildConfigField "boolean", "IS_DEBUG", "true"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility javaVersion.sourceVersion
+        targetCompatibility javaVersion.targetVersion
+    }
+
+    sourceSets {
+        main {
+            if (currentModule.isRunAlone) {
+                manifest.srcFile manifestPath.application
+            } else {
+                manifest.srcFile manifestPath.library
+            }
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$libsVersion.appcompatVersion"
+    implementation "com.google.android.material:material:$libsVersion.materialVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$libsVersion.constraintlayoutVersion"
+    testImplementation "junit:junit:$libsVersion.junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$libsVersion.androidxjunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$libsVersion.espressoCoreVersion"
+}
+if (currentModule.isRunAlone) {
+    //引入Apk打包脚本
+    apply from: this.file("${this.getRootDir()}/customScript/common_package.gradle")
+}

@@ -32,13 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnStartPlay.setOnClickListener(this);
         mBtnStopPlay = findViewById(R.id.record_and_play_stopPlay);
         mBtnStopPlay.setOnClickListener(this);
-        requestPermission();
-    }
-
-    public void requestPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            //没有相关权限，进行动态申请
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
     }
 
     @Override
