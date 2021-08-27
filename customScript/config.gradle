@@ -74,6 +74,17 @@ ext {
                     resourcePrefix: "record_and_play",//资源名前缀约束
                     versionInfo   : "初始测试版本",
             ],
+            module_opensl_es      : [
+                    isRunAlone    : true,
+                    applicationId : "${androidDefaultConfig["applicationId"]}.opensl_es",
+                    versionCode   : 1,//版本号
+                    versionName   : getSelfDefinedVersionName("V1.0."),//版本名
+                    projectName   : [EN: "av_learning", CN: "音视频学习"],
+                    module_name   : "opensl_es",
+                    appName       : "opensl es",//应用名称
+                    resourcePrefix: "opensl_es",//资源名前缀约束
+                    versionInfo   : "初始测试版本",
+            ],
             app                   : [
                     isRunAlone    : true,
                     applicationId : "${androidDefaultConfig["applicationId"]}",

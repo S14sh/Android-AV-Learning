@@ -2,3 +2,4 @@ ext{
     currentModule = rootProject.ext.modules.module_log
 }
 apply from: this.file("${this.getRootDir()}/customScript/common_config.gradle")
+apply from: this.file("${this.getRootDir()}/customScript/common_c_config.gradle")

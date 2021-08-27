@@ -2,32 +2,4 @@ ext {
     currentModule = rootProject.ext.modules.module_ffmpeg
 }
 apply from: this.file("${this.getRootDir()}/customScript/common_config.gradle")
-android {
-
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                cppFlags cMake.cppFlags
-                abiFilters cMake.abiFilters.v8, cMake.abiFilters.v7
-            }
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path cMake.path
-            version libsVersion.CMakeVersion
-        }
-    }
-
-    sourceSets {
-        main {
-            if (currentModule.isRunAlone) {
-                manifest.srcFile manifestPath.application
-            } else {
-                manifest.srcFile manifestPath.library
-            }
-        }
-    }
-
-}
+apply from: this.file("${this.getRootDir()}/customScript/common_c_config.gradle")

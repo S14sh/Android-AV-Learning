@@ -1,5 +1,4 @@
 #include "native-fdkaac-lib.h"
-#include <string>
 
 #ifdef __cplusplus
 extern "C" {

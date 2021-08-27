@@ -2,23 +2,4 @@ ext {
     currentModule = rootProject.ext.modules.module_fdkaac
 }
 apply from: this.file("${this.getRootDir()}/customScript/common_config.gradle")
-
-android {
-
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                cppFlags cMake.cppFlags
-                abiFilters cMake.abiFilters.v8, cMake.abiFilters.v7
-            }
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path cMake.path
-            version libsVersion.CMakeVersion
-        }
-    }
-
-}
+apply from: this.file("${this.getRootDir()}/customScript/common_c_config.gradle")

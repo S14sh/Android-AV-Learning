@@ -1,0 +1,5 @@
+ext {
+    currentModule = rootProject.ext.modules.module_opensl_es
+}
+apply from: this.file("${this.getRootDir()}/customScript/common_config.gradle")
+apply from: this.file("${this.getRootDir()}/customScript/common_c_config.gradle")

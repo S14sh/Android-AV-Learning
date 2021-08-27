@@ -2,10 +2,7 @@ package com.android.module_record_and_play;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;

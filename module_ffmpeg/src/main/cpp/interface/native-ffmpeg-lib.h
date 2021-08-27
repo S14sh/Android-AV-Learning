@@ -10,7 +10,23 @@ extern "C"
 
 #include <libavutil/avutil.h>
 
-JNIEXPORT jstring JNICALL Java_util_FfmpegUtil_getFfmpegVersion(JNIEnv *env, jobject thiz);
+#define NATIVE_CLASS "util/FfmpegUtil"
+#define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
+
+jstring Android_JNI_getFfmpegVersion(JNIEnv *env, jobject thiz);
+
+static JNINativeMethod NATIVE_METHOD[] = {
+        //native 函数-------签名-------对象的函数
+        {"", "", (void *) Android_JNI_getFfmpegVersion}
+};
+
+/**
+ * System.loadLibrary 会执行
+ * @param javaVM
+ * @param pVoid
+ * @return
+ */
+jint JNI_OnLoad(JavaVM *javaVM, void *pVoid);
 
 #ifdef __cplusplus
 }

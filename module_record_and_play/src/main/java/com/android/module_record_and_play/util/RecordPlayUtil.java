@@ -129,13 +129,14 @@ public enum RecordPlayUtil {
      * 停止播放
      */
     public void stopPlay() {
-        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY)
+        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY) {
             Log.e(TAG, "stopPlay: 播放器尚未播放");
-        else {
+        }else {
             mStatus = STATUS_STOP;
             mAudioTrack.stop();
-            if (mStateChangeListener != null)
+            if (mStateChangeListener != null) {
                 mStateChangeListener.OnPlayStop();
+            }
             release();
         }
     }

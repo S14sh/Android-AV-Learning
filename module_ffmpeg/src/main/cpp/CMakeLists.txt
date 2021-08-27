@@ -36,7 +36,7 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         log)
 
-include_directories(${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI}/include)
+include_directories(${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI}/include/)
 
 set(LIBS_DIR ${CMAKE_SOURCE_DIR}/${CMAKE_ANDROID_ARCH_ABI})
 
