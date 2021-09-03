@@ -2,7 +2,7 @@
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ï¿½ Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Fï¿½rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -181,7 +181,7 @@ is chosen, a new WAVE file for each new configuration will be created.
 
 \section BufferSystem Buffer System
 
-There are three main buffers in an AAC decoder application. One external input buffer to hold bitstream
+There are three main mBuffers in an AAC decoder application. One external input buffer to hold bitstream
 data from file I/O or elsewhere, one decoder-internal input buffer, and one to hold the decoded output
 PCM sample data, whereas this output buffer may overlap with the external input buffer.
 
@@ -222,11 +222,11 @@ pChannelType and pChannelIndices might require some more detailed explanation.
 
 These two arrays indicate what is each output channel supposed to be. Both array have
 CStreamInfo::numChannels cells. Each cell of pChannelType indicates the channel type, described in
-the enum ::AUDIO_CHANNEL_TYPE defined in FDK_audio.h. The cells of pChannelIndices indicate the sub index
+the enum ::AUDIO_CHANNEL_TYPE defined in FDK_audio.h. The cells of pChannelIndices indicate the sub mIndex
 among the channels starting with 0 among all channels of the same audio channel type.
 
 The indexing scheme is the same as for MPEG-2/4. Thus indices are counted upwards starting from the front
-direction (thus a center channel if any, will always be index 0). Then the indices count up, starting always
+direction (thus a center channel if any, will always be mIndex 0). Then the indices count up, starting always
 with the left side, pairwise from front toward back. For detailed explanation, please refer to
 ISO/IEC 13818-7:2005(E), chapter 8.5.3.2.
 
@@ -285,9 +285,9 @@ CStreamInfo::pChannelIndices = { 1, 2, 0, 0, 0, 1 }
 
 Since ::AAC_PCM_OUTPUT_CHANNEL_MAPPING is 1, WAV file channel ordering will be used. For a 5.1 channel
 scheme, thus the channels would be: front left, front right, center, LFE, surround left, surround right.
-Thus the third channel is the center channel, receiving the index 0. The other front channels are
+Thus the third channel is the center channel, receiving the mIndex 0. The other front channels are
 front left, front right being placed as first and second channels with indices 1 and 2 correspondingly.
-There is only one LFE, placed as the fourth channel and index 0. Finally both surround
+There is only one LFE, placed as the fourth channel and mIndex 0. Finally both surround
 channels get the type definition ACT_BACK, and the indices 0 and 1.
 
 Since ::AAC_PCM_OUTPUT_INTERLEAVED is set to 1, the audio channels will be placed in the output buffer
@@ -544,7 +544,7 @@ typedef struct
                                               512 or 480 for AAC-LD and AAC-ELD                                                    */
   INT               numChannels;         /*!< The number of output audio channels in the decoded and interleaved PCM audio signal. */
   AUDIO_CHANNEL_TYPE *pChannelType;      /*!< Audio channel type of each output audio channel.                                     */
-  UCHAR             *pChannelIndices;    /*!< Audio channel index for each output audio channel.
+  UCHAR             *pChannelIndices;    /*!< Audio channel mIndex for each output audio channel.
                                                See ISO/IEC 13818-7:2005(E), 8.5.3.2 Explicit channel mapping using a program_config_element() */
   /* Decoder internal members. */
   INT               aacSampleRate;       /*!< Sampling rate in Hz without SBR (from configuration info).                           */
@@ -709,7 +709,7 @@ aacDecoder_Fill ( HANDLE_AACDECODER  self,
                                  without having new input data. Thus new input data will not be considered.*/
 #define AACDEC_INTR     4 /*!< Flag for aacDecoder_DecodeFrame(): Signal an input bit stream data discontinuity. \
                                  Resync any internals as necessary. */
-#define AACDEC_CLRHIST  8 /*!< Flag for aacDecoder_DecodeFrame(): Clear all signal delay lines and history buffers.\
+#define AACDEC_CLRHIST  8 /*!< Flag for aacDecoder_DecodeFrame(): Clear all signal delay lines and history mBuffers.\
                                  CAUTION: This can cause discontinuities in the output signal. */
 
 /**

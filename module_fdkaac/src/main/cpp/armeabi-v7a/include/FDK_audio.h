@@ -2,7 +2,7 @@
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ï¿½ Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Fï¿½rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -339,9 +339,9 @@ typedef struct {
   int        BSACnumOfSubFrame;  /**< The number of the sub-frames which are grouped and transmitted in a super-frame (BSAC). */
   int        BSAClayerLength;    /**< The average length of the large-step layers in bytes (BSAC).                            */
   UINT       flags;              /**< flags */
-  UCHAR      matrixMixdownA;     /**< Matrix mixdown index to put into PCE. Default value 0 means no mixdown coefficient,
+  UCHAR      matrixMixdownA;     /**< Matrix mixdown mIndex to put into PCE. Default value 0 means no mixdown coefficient,
                                       valid values are 1-4 which correspond to matrix_mixdown_idx 0-3. */
-  UCHAR      headerPeriod;       /**< Frame period for sending in band configuration buffers in the transport layer. */
+  UCHAR      headerPeriod;       /**< Frame period for sending in band configuration mBuffers in the transport layer. */
 
   UCHAR      stereoConfigIndex; /**< USAC MPS stereo mode */
   UCHAR      sbrMode;           /**< USAC SBR mode */
@@ -608,7 +608,7 @@ typedef struct FDK_bufDescr
                            operator for the data type used for the specific buffer. */
   UINT   *pBufType;   /*!< Pointer to an array of bit fields containing a description
                            for each buffer. See XXX below for more details.  */
-  UINT    numBufs;    /*!< Total number of buffers. */
+  UINT    numBufs;    /*!< Total number of mBuffers. */
 
 } FDK_bufDescr;
 

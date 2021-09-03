@@ -2,7 +2,7 @@
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ï¿½ Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Fï¿½rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -193,7 +193,7 @@ This is the default open procedure for the AAC encoder if memory consumption doe
 \code aacEncOpen(&hAacEncoder,value,0) \endcode
 - Specifying the maximum number of channels to be supported in the encoder instance can be done as follows.
  - For example allocate an encoder instance which supports 2 channels for all supported AOTs.
-   The library itself may be capable of encoding up to 6 or 8 channels but in this example only 2 channel encoding is required and thus only buffers for 2 channels are allocated to save data memory.
+   The library itself may be capable of encoding up to 6 or 8 channels but in this example only 2 channel encoding is required and thus only mBuffers for 2 channels are allocated to save data memory.
 \code aacEncOpen(&hAacEncoder,0,2) \endcode
  - Additionally the maximum number of supported channels in the SBR module can be denoted separately.\n
    In this example the encoder instance provides a maximum of 6 channels out of which up to 2 channels support SBR.
@@ -205,9 +205,9 @@ This is the default open procedure for the AAC encoder if memory consumption doe
 \section bufDes Input/Output Arguments
 
 \subsection allocIOBufs Provide Buffer Descriptors
-In the present encoder API, the input and output buffers are described with \ref AACENC_BufDesc "buffer descriptors". This mechanism allows a flexible handling
-of input and output buffers without impact to the actual encoding call. Optional buffers are necessary e.g. for ancillary data, meta data input or additional output
-buffers describing superframing data in DAB+ or DRM+.\n
+In the present encoder API, the input and output mBuffers are described with \ref AACENC_BufDesc "buffer descriptors". This mechanism allows a flexible handling
+of input and output mBuffers without impact to the actual encoding call. Optional mBuffers are necessary e.g. for ancillary data, meta data input or additional output
+mBuffers describing superframing data in DAB+ or DRM+.\n
 At least one input buffer for audio input data and one output buffer for bitstream data must be allocated. The input buffer size can be a user defined multiple
 of the number of input channels. PCM input data will be copied from the user defined PCM buffer to an internal input buffer and so input data can be less than one AAC audio frame.
 The output buffer size should be 6144 bits per channel excluding the LFE channel.
@@ -789,10 +789,10 @@ typedef struct {
 
 
 /**
- *  Describes the input and output buffers for an aacEncEncode() call.
+ *  Describes the input and output mBuffers for an aacEncEncode() call.
  */
 typedef struct {
-    INT                 numBufs;             /*!< Number of buffers. */
+    INT                 numBufs;             /*!< Number of mBuffers. */
     void              **bufs;                /*!< Pointer to vector containing buffer addresses. */
     INT                *bufferIdentifiers;   /*!< Identifier of each buffer element. See ::AACENC_BufferIdentifier. */
     INT                *bufSizes;            /*!< Size of each buffer in 8-bit bytes. */
@@ -976,7 +976,7 @@ typedef enum
                                                   - 7: Audio Mux Elements (LATM) with muxConfigPresent = 0, out of band StreamMuxConfig
                                                   - 10: Audio Sync Stream (LOAS) */
 
-  AACENC_HEADER_PERIOD            = 0x0301,  /*!< Frame count period for sending in-band configuration buffers within LATM/LOAS
+  AACENC_HEADER_PERIOD            = 0x0301,  /*!< Frame count period for sending in-band configuration mBuffers within LATM/LOAS
                                                   transport layer. Additionally this parameter configures the PCE repetition period
                                                   in raw_data_block(). See \ref encPCE.
                                                   - 0xFF: auto-mode default 10 for TT_MP4_ADTS, TT_MP4_LOAS and TT_MP4_LATM_MCP1, otherwise 0.

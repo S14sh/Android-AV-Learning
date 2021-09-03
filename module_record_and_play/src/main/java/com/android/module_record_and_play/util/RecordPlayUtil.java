@@ -9,6 +9,8 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.module_opensl_es.util.Opensl_esUtil;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -45,11 +47,12 @@ public enum RecordPlayUtil {
      *
      * @param context
      */
+    @SuppressWarnings("deprecation")
     public void createAudioTrack(Context context) {
         mContext = context;
         mBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT);
         if (mBufferSize <= 0)
-            Log.e(TAG, "createAudioTrack: " + "AudioTrack is not available because of bufferSize is " + mBufferSize);
+            Log.e(TAG, "createAudioTrack: " + "AudioTrack is not available because of mBufferSize is " + mBufferSize);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mAudioTrack = new AudioTrack.Builder()
                     .setAudioAttributes(new AudioAttributes.Builder()
@@ -81,15 +84,16 @@ public enum RecordPlayUtil {
             Log.e(TAG, "startPlay: filePath is empty!!!");
             return;
         }
-        mFilePath = path;
-        if (mStatus == STATUS_NOT_READY || mAudioTrack == null) {
-            Log.e(TAG, "startPlay: " + "播放器尚未初始化");
-            return;
-        } else if (mStatus == STATUS_START) {
-            Log.e(TAG, "startPlay: " + "播放器正在播放...");
-            return;
-        }
-        mExecutorService.execute(() -> playPCMFromFile());
+//        mFilePath = path;
+//        if (mStatus == STATUS_NOT_READY || mAudioTrack == null) {
+//            Log.e(TAG, "startPlay: " + "播放器尚未初始化");
+//            return;
+//        } else if (mStatus == STATUS_START) {
+//            Log.e(TAG, "startPlay: " + "播放器正在播放...");
+//            return;
+//        }
+//        mExecutorService.execute(() -> playPCMFromFile());
+        Opensl_esUtil.instance.nativePlayPCM(path);
         mStatus = STATUS_START;
     }
 
@@ -104,8 +108,9 @@ public enum RecordPlayUtil {
             is = new DataInputStream(new BufferedInputStream(new FileInputStream(mContext.getExternalCacheDir().getAbsolutePath() + mFilePath)));
             if (mAudioTrack != null && mAudioTrack.getState() != AudioTrack.STATE_UNINITIALIZED && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
                 mAudioTrack.play();
-                if (mStateChangeListener != null)
+                if (mStateChangeListener != null) {
                     mStateChangeListener.OnPlayStart();
+                }
             }
             while ((length = is.read(bytes)) != -1 && mStatus == STATUS_START) {
                 //write方法会阻塞
@@ -129,16 +134,17 @@ public enum RecordPlayUtil {
      * 停止播放
      */
     public void stopPlay() {
-        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY) {
-            Log.e(TAG, "stopPlay: 播放器尚未播放");
-        }else {
-            mStatus = STATUS_STOP;
-            mAudioTrack.stop();
-            if (mStateChangeListener != null) {
-                mStateChangeListener.OnPlayStop();
-            }
-            release();
-        }
+//        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY) {
+//            Log.e(TAG, "stopPlay: 播放器尚未播放");
+//        } else {
+//            mStatus = STATUS_STOP;
+//            mAudioTrack.stop();
+//            if (mStateChangeListener != null) {
+//                mStateChangeListener.OnPlayStop();
+//            }
+//            release();
+//        }
+        Opensl_esUtil.instance.nativeStopPCM();
     }
 
     /**

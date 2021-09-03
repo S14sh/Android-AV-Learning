@@ -10,6 +10,9 @@
 // 这里是针对安卓的扩展，如果要垮平台则需要注意
 #include <SLES/OpenSLES_Android.h>
 #include <android/log.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <iostream>
 
 #ifdef __cplusplus
 extern "C"
@@ -22,28 +25,56 @@ extern "C"
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #endif
 
+#define BUFFERS_SIZE 2
+
+void playerCallback(SLAndroidSimpleBufferQueueItf bq, void *context);
+
 class Opensl_es {
 private:
     /**
      *引擎对象
      */
-    SLObjectItf engineObject;
+    SLObjectItf mEngineObject;
     /**
      * 引擎接口
      */
-    SLEngineItf engineInterface;
+    SLEngineItf mEngineInterface;
     /**
      * 混音器
      */
-    SLObjectItf outputMixObject;
+    SLObjectItf mOutputMixObject;
     /**
      * 播放缓冲队列
      */
-    SLDataLocator_AndroidSimpleBufferQueue buffers;
+    uint8_t *mBuffers[BUFFERS_SIZE];
+    SLuint32 mBufferSize;
+
+    int mIndex;
+
+    /**
+     * 播放器
+     */
+    SLObjectItf mPlayerObject;
+
     /**
      * 播放器接口
      */
-    SLPlayItf player;
+    SLPlayItf mPlayer;
+
+    SLAndroidSimpleBufferQueueItf mBufferQueue;
+
+    SLEffectSendItf mEffectSend;
+
+    SLVolumeItf mVolume;
+
+    pthread_mutex_t mMutex;
+
+    void createEngine();
+
+    void releaseEngine();
+
+    void releasePlayer();
+
 public:
 
     Opensl_es();
@@ -65,11 +96,13 @@ public:
                              SLuint32 samplesPerSec = SL_SAMPLINGRATE_44_1,
                              SLuint32 bitsPerSample = SL_PCMSAMPLEFORMAT_FIXED_16,
                              SLuint32 containerSize = SL_PCMSAMPLEFORMAT_FIXED_16,
-                             SLuint32 channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
+                             SLuint32 channelMask = SL_SPEAKER_FRONT_CENTER,
                              SLuint32 endianness = SL_BYTEORDER_LITTLEENDIAN,
                              SLuint32 bufferNum = 2);
 
-    SLresult playPCM();
+    SLresult playPCM(void *data, size_t length);
+
+    friend void playerCallback(SLAndroidSimpleBufferQueueItf bq, void *context);
 
 };
 

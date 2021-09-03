@@ -75,7 +75,7 @@ ext {
                     versionInfo   : "初始测试版本",
             ],
             module_opensl_es      : [
-                    isRunAlone    : true,
+                    isRunAlone    : false,
                     applicationId : "${androidDefaultConfig["applicationId"]}.opensl_es",
                     versionCode   : 1,//版本号
                     versionName   : getSelfDefinedVersionName("V1.0."),//版本名

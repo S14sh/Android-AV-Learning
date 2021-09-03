@@ -2,3 +2,8 @@ ext {
     currentModule = rootProject.ext.modules.module_record_and_play
 }
 apply from: this.file("${this.getRootDir()}/customScript/common_config.gradle")
+dependencies {
+    def isModuleOpenslEsRunAlone = rootProject.modules.module_opensl_es.isRunAlone
+    if (!isModuleOpenslEsRunAlone)
+        api project(path: ':module_opensl_es')
+}
