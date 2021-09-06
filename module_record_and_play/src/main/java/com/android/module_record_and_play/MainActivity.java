@@ -6,29 +6,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.module_record_and_play.util.RecordPlayUtil;
-import com.android.module_record_and_play.util.RecordUtil;
+import com.android.module_record_and_play.databinding.ActivityMainBinding;
 
+import util.RecordPlayUtil;
+import util.RecordUtil;
+
+/**
+ * 该module下测试用activity
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button mBtnStartRecord, mBtnStopRecord;
-    private Button mBtnStartPlay, mBtnStopPlay;
+    private ActivityMainBinding mViewBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mBtnStartRecord = findViewById(R.id.record_and_play_startRecord);
-        mBtnStartRecord.setOnClickListener(this);
-        mBtnStopRecord = findViewById(R.id.record_and_play_stopRecord);
-        mBtnStopRecord.setOnClickListener(this);
-        mBtnStartPlay = findViewById(R.id.record_and_play_startPlay);
-        mBtnStartPlay.setOnClickListener(this);
-        mBtnStopPlay = findViewById(R.id.record_and_play_stopPlay);
-        mBtnStopPlay.setOnClickListener(this);
+        mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(mViewBinding.getRoot());
+        mViewBinding.recordAndPlayStartRecord.setOnClickListener(this);
+        mViewBinding.recordAndPlayStopRecord.setOnClickListener(this);
+        mViewBinding.recordAndPlayStartAudioTrackPlay.setOnClickListener(this);
+        mViewBinding.recordAndPlayStopAudioTrackPlay.setOnClickListener(this);
+        mViewBinding.recordAndPlayStartOpenslPlay.setOnClickListener(this);
+        mViewBinding.recordAndPlayStopOpenslPlay.setOnClickListener(this);
     }
 
     @Override
@@ -38,11 +40,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             RecordUtil.instance.startRecord("test1");
         } else if (v.getId() == R.id.record_and_play_stopRecord) {
             RecordUtil.instance.stopRecording();
-        } else if (v.getId() == R.id.record_and_play_startPlay) {
+        } else if (v.getId() == R.id.record_and_play_startAudioTrackPlay) {
             RecordPlayUtil.instance.createAudioTrack(this);
-            RecordPlayUtil.instance.startPlay("test1");
-        } else if (v.getId() == R.id.record_and_play_stopPlay) {
-            RecordPlayUtil.instance.stopPlay();
+            RecordPlayUtil.instance.startAudioTrackPlay("test1");
+        } else if (v.getId() == R.id.record_and_play_stopAudioTrackPlay) {
+            RecordPlayUtil.instance.stopAudioTrackPlay();
+        } else if (v.getId() == R.id.record_and_play_startOpenslPlay) {
+            RecordPlayUtil.instance.startOpenslPlay("test1");
+        } else if (v.getId() == R.id.record_and_play_stopOpenslPlay) {
+            RecordPlayUtil.instance.stopOpenslPlay();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.android.ffmpeg;
+package com.android.module_ffmpeg;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,8 +7,10 @@ import android.widget.TextView;
 
 import util.FfmpegUtil;
 
+/**
+ * 测试用activity
+ */
 public class MainActivity extends AppCompatActivity {
-
 
 
     @Override

@@ -22,6 +22,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     buildTypes {
         release {
             debuggable false
@@ -51,6 +55,7 @@ android {
         main {
             if (currentModule.isRunAlone) {
                 manifest.srcFile manifestPath.application
+                res.srcDirs "/src/main/res/"
             } else {
                 manifest.srcFile manifestPath.library
             }

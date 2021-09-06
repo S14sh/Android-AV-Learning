@@ -1,4 +1,4 @@
-package com.android.module_record_and_play.util;
+package util;
 
 import android.Manifest;
 import android.app.Activity;
@@ -6,10 +6,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
+
 import android.media.MediaRecorder;
 import android.util.Log;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -112,8 +111,9 @@ public enum RecordUtil {
      * @return
      */
     private boolean isAudioRecordInit() {
-        if (mAudioRecord == null || mAudioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
+        if (mAudioRecord == null || mAudioRecord.getState() == AudioRecord.STATE_UNINITIALIZED) {
             return false;
+        }
         return true;
     }
 
@@ -175,9 +175,10 @@ public enum RecordUtil {
      * 检查权限
      */
     private void permissionCheck() {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             //没有相关权限，进行动态申请
             ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.RECORD_AUDIO}, QUEST_CODE);
+        }
     }
 
     /**

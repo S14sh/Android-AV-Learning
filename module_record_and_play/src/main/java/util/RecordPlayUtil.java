@@ -1,4 +1,4 @@
-package com.android.module_record_and_play.util;
+package util;
 
 import android.content.Context;
 import android.media.AudioAttributes;
@@ -79,21 +79,20 @@ public enum RecordPlayUtil {
      *
      * @param path
      */
-    public void startPlay(String path) {
+    public void startAudioTrackPlay(String path) {
         if (TextUtils.isEmpty(path)) {
             Log.e(TAG, "startPlay: filePath is empty!!!");
             return;
         }
-//        mFilePath = path;
-//        if (mStatus == STATUS_NOT_READY || mAudioTrack == null) {
-//            Log.e(TAG, "startPlay: " + "播放器尚未初始化");
-//            return;
-//        } else if (mStatus == STATUS_START) {
-//            Log.e(TAG, "startPlay: " + "播放器正在播放...");
-//            return;
-//        }
-//        mExecutorService.execute(() -> playPCMFromFile());
-        Opensl_esUtil.instance.nativePlayPCM(path);
+        mFilePath = path;
+        if (mStatus == STATUS_NOT_READY || mAudioTrack == null) {
+            Log.e(TAG, "startPlay: " + "播放器尚未初始化");
+            return;
+        } else if (mStatus == STATUS_START) {
+            Log.e(TAG, "startPlay: " + "播放器正在播放...");
+            return;
+        }
+        mExecutorService.execute(() -> playPCMFromFile());
         mStatus = STATUS_START;
     }
 
@@ -133,18 +132,17 @@ public enum RecordPlayUtil {
     /**
      * 停止播放
      */
-    public void stopPlay() {
-//        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY) {
-//            Log.e(TAG, "stopPlay: 播放器尚未播放");
-//        } else {
-//            mStatus = STATUS_STOP;
-//            mAudioTrack.stop();
-//            if (mStateChangeListener != null) {
-//                mStateChangeListener.OnPlayStop();
-//            }
-//            release();
-//        }
-        Opensl_esUtil.instance.nativeStopPCM();
+    public void stopAudioTrackPlay() {
+        if (mStatus == STATUS_READY || mStatus == STATUS_NOT_READY) {
+            Log.e(TAG, "stopPlay: 播放器尚未播放");
+        } else {
+            mStatus = STATUS_STOP;
+            mAudioTrack.stop();
+            if (mStateChangeListener != null) {
+                mStateChangeListener.OnPlayStop();
+            }
+            release();
+        }
     }
 
     /**
@@ -157,6 +155,19 @@ public enum RecordPlayUtil {
             mAudioTrack = null;
             mStateChangeListener = null;
         }
+    }
+
+    /**
+     * 使用opensl_es播放PCM
+     *
+     * @param path
+     */
+    public void startOpenslPlay(String path) {
+        Opensl_esUtil.instance.nativePlayPCM(path);
+    }
+
+    public void stopOpenslPlay() {
+        Opensl_esUtil.instance.nativeStopPCM();
     }
 
     /**
@@ -173,8 +184,14 @@ public enum RecordPlayUtil {
      */
     interface StateChangeListener {
 
+        /**
+         * 播放时回调
+         */
         void OnPlayStart();
 
+        /**
+         * 停止播放时回调
+         */
         void OnPlayStop();
 
     }
