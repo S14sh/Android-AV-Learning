@@ -16,10 +16,13 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-//播放录音单例类
+/**
+ * 播放录音单例类
+ */
 public enum RecordPlayUtil {
 
     instance;
@@ -38,8 +41,10 @@ public enum RecordPlayUtil {
     private volatile int mStatus = STATUS_NOT_READY;
     private String mFilePath;
     private Context mContext;
-    // 单任务线程池
-    private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    /**
+     * 单任务线程池
+     */
+    private ThreadPoolExecutor mExecutorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
     private StateChangeListener mStateChangeListener = null;
 
     /**
@@ -51,8 +56,9 @@ public enum RecordPlayUtil {
     public void createAudioTrack(Context context) {
         mContext = context;
         mBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT);
-        if (mBufferSize <= 0)
+        if (mBufferSize <= 0) {
             Log.e(TAG, "createAudioTrack: " + "AudioTrack is not available because of mBufferSize is " + mBufferSize);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mAudioTrack = new AudioTrack.Builder()
                     .setAudioAttributes(new AudioAttributes.Builder()

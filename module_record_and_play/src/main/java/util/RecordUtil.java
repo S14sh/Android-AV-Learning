@@ -1,22 +1,18 @@
 package util;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 
 import android.media.MediaRecorder;
 import android.util.Log;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 //录音单例类
 public enum RecordUtil {
@@ -24,16 +20,16 @@ public enum RecordUtil {
     instance;
 
     private final String TAG = getClass().getSimpleName();
-    public final int QUEST_CODE = hashCode();
     private final int FREQUENCY = 44100;
-
     private AudioRecord mAudioRecord = null;
     //用于申请权限相关
     private Context mContext = null;
     private int mRecordBuffSize = 0;
     private byte[] mData;
-    // 单任务线程池
-    private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    /**
+     * 单任务线程池
+     */
+    private ThreadPoolExecutor mExecutorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>());
     private StateChangeListener mStateChangeListener = null;
 
     /**
@@ -42,6 +38,7 @@ public enum RecordUtil {
      * @param context
      */
     public void createAudioRecord(Context context) {
+        mContext = context;
         int bufferSize = AudioRecord.getMinBufferSize(FREQUENCY, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT);
         createAudioRecord(context, MediaRecorder.AudioSource.MIC, FREQUENCY, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
     }
@@ -71,7 +68,6 @@ public enum RecordUtil {
         }
         mData = new byte[mRecordBuffSize];
         mContext = context;
-        permissionCheck();
     }
 
     /**
@@ -86,14 +82,17 @@ public enum RecordUtil {
             return;
         }
         if (isRecording()) {
-            //已经在录音，直接退出
+            //已经在录音，先停止之前的录音
             Log.e(TAG, "startRecord: is RECORDING now!!!");
-            return;
+            stopRecording();
         }
-        mAudioRecord.startRecording();
-        if (mStateChangeListener != null)
+        if (mStateChangeListener != null) {
             mStateChangeListener.OnRecordStart();
-        mExecutorService.execute(() -> write2File(fileName));
+        }
+        mExecutorService.execute(() -> {
+            mAudioRecord.startRecording();
+            write2File(fileName);
+        });
     }
 
     /**
@@ -102,7 +101,7 @@ public enum RecordUtil {
      * @return
      */
     private boolean isRecording() {
-        return mAudioRecord.getState() == AudioRecord.RECORDSTATE_RECORDING;
+        return mAudioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING;
     }
 
     /**
@@ -155,8 +154,9 @@ public enum RecordUtil {
     public void stopRecording() {
         if (isRecording()) {
             mAudioRecord.stop();
-            if (mStateChangeListener != null)
+            if (mStateChangeListener != null) {
                 mStateChangeListener.OnRecordStop();
+            }
         }
         release();
     }
@@ -169,16 +169,6 @@ public enum RecordUtil {
         mAudioRecord = null;
         mStateChangeListener = null;
         mContext = null;
-    }
-
-    /**
-     * 检查权限
-     */
-    private void permissionCheck() {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            //没有相关权限，进行动态申请
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.RECORD_AUDIO}, QUEST_CODE);
-        }
     }
 
     /**

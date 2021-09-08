@@ -100,7 +100,7 @@ public:
                              SLuint32 endianness = SL_BYTEORDER_LITTLEENDIAN,
                              SLuint32 bufferNum = 2);
 
-    SLresult playPCM(void *data, size_t length);
+    SLresult playPCM(const void * const data, const size_t &length);
 
     friend void playerCallback(SLAndroidSimpleBufferQueueItf bq, void *context);
 

@@ -41,7 +41,7 @@ void Opensl_es::createEngine() {
 }
 
 Opensl_es::Opensl_es() : mEngineObject(nullptr), mEngineInterface(nullptr),
-                         mOutputMixObject(nullptr), mIndex(0) {
+                         mOutputMixObject(nullptr), mIndex(0), mBufferSize(0) {
     mMutex = PTHREAD_MUTEX_INITIALIZER;
     mBuffers[0] = nullptr;
     mBuffers[1] = nullptr;
@@ -71,12 +71,12 @@ void Opensl_es::releasePlayer() {
         mVolume = nullptr;
     }
 
-    if (mBuffers[0]) {
+    if (mBuffers[0] != nullptr) {
         delete[] mBuffers[0];
         mBuffers[0] = nullptr;
     }
 
-    if (mBuffers[1]) {
+    if (mBuffers[1] != nullptr) {
         delete[] mBuffers[1];
         mBuffers[1] = nullptr;
     }
@@ -184,11 +184,10 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
         LOGE("mPlayerObj SetPlayState failed: %d", result);
         return result;
     }
-
     return SL_RESULT_SUCCESS;
 }
 
-SLresult Opensl_es::playPCM(void *data, size_t length) {
+SLresult Opensl_es::playPCM(const void * const data, const size_t &length) {
     // 每次播放一帧, 必须等待一帧音频播放完毕后才可以 Enqueue 第二帧音频
     pthread_mutex_lock(&mMutex);
     if (mBufferSize < length) {
@@ -203,8 +202,9 @@ SLresult Opensl_es::playPCM(void *data, size_t length) {
         mBuffers[1] = new uint8_t[mBufferSize];
     }
     memcpy(mBuffers[mIndex], data, length);
-    (*mBufferQueue)->Enqueue(mBufferQueue, mBuffers[mIndex], length);
+    SLresult result = (*mBufferQueue)->Enqueue(mBufferQueue, mBuffers[mIndex], length);
     mIndex = 1 - mIndex;
+    return result;
 }
 
 // 一帧音频播放完毕后就会回调这个函数

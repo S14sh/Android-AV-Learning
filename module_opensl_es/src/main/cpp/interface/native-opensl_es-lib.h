@@ -20,7 +20,7 @@ static Opensl_es *player = nullptr;
 
 static std::ifstream pcmFile;
 
-static bool isPlaying = false;
+static volatile bool isPlaying = false;
 
 static void *playThreadFunc(void *arg);
 

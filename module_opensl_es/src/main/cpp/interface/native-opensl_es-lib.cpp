@@ -11,15 +11,18 @@ extern "C"
 
 static void *playThreadFunc(void *arg) {
     short buffer[BUFFER_SIZE];
+    int size = 0;
     while (isPlaying && !pcmFile.eof()) {
-        for (int i = 0; i < BUFFER_SIZE; ++i) {
+        for (int i = 0; i < BUFFER_SIZE && !pcmFile.eof(); ++i) {
             pcmFile >> buffer[i];
+            ++size;
         }
         if (player != nullptr) {
-            player->playPCM(buffer, BUFFER_SIZE);
+            player->playPCM(buffer, size);
         }
+        size = 0;
     }
-    return 0;
+    return nullptr;
 }
 
 void Java_com_module_1opensl_1es_util_Opensl_1esUtil_nativePlayPCM(JNIEnv *env, jobject thiz,
@@ -44,7 +47,10 @@ void Java_com_module_1opensl_1es_util_Opensl_1esUtil_nativePlayPCM(JNIEnv *env, 
     pcmFile.open(pcmPath);
 
     isPlaying = true;
+
     pthread_t playThread;
+    //在子线程中执行
+
     pthread_create(&playThread, nullptr, playThreadFunc, 0);
 
     env->ReleaseStringUTFChars(path, pcmPath);
