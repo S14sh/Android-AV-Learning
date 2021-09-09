@@ -168,8 +168,8 @@ public enum RecordPlayUtil {
      *
      * @param path
      */
-    public void startOpenslPlay(String path) {
-        Opensl_esUtil.instance.nativePlayPCM(path);
+    public void startOpenslPlay(Context context, String path) {
+        Opensl_esUtil.instance.nativePlayPCM(context.getExternalCacheDir().getAbsolutePath() + path);
     }
 
     public void stopOpenslPlay() {

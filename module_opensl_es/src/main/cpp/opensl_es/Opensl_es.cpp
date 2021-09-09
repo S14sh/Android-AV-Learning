@@ -62,7 +62,8 @@ void Opensl_es::releaseEngine() {
 
 void Opensl_es::releasePlayer() {
     pthread_mutex_lock(&mMutex);
-    if (mPlayerObject) {
+
+    if (mPlayerObject != nullptr) {
         (*mPlayerObject)->Destroy(mPlayerObject);
         mPlayerObject = nullptr;
         mPlayer = nullptr;
@@ -80,14 +81,14 @@ void Opensl_es::releasePlayer() {
         delete[] mBuffers[1];
         mBuffers[1] = nullptr;
     }
-
     pthread_mutex_unlock(&mMutex);
     pthread_mutex_destroy(&mMutex);
 }
 
 Opensl_es::~Opensl_es() {
-    releaseEngine();
     releasePlayer();
+    //先释放engine再释放player会造成空指针异常
+    releaseEngine();
 }
 
 SLresult
@@ -187,7 +188,7 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
     return SL_RESULT_SUCCESS;
 }
 
-SLresult Opensl_es::playPCM(const void * const data, const size_t &length) {
+SLresult Opensl_es::playPCM(const void *const data, const size_t &length) {
     // 每次播放一帧, 必须等待一帧音频播放完毕后才可以 Enqueue 第二帧音频
     pthread_mutex_lock(&mMutex);
     if (mBufferSize < length) {

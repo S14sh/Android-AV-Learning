@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == R.id.record_and_play_stopAudioTrackPlay) {
             RecordPlayUtil.instance.stopAudioTrackPlay();
         } else if (v.getId() == R.id.record_and_play_startOpenslPlay) {
-            RecordPlayUtil.instance.startOpenslPlay("test1");
+            RecordPlayUtil.instance.startOpenslPlay(this,"test1");
         } else if (v.getId() == R.id.record_and_play_stopOpenslPlay) {
             RecordPlayUtil.instance.stopOpenslPlay();
         }

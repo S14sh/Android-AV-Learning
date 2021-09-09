@@ -46,6 +46,11 @@ void Java_com_module_1opensl_1es_util_Opensl_1esUtil_nativePlayPCM(JNIEnv *env, 
     }
     pcmFile.open(pcmPath);
 
+    if (pcmFile.fail()) {
+        LOGE("open file failed!!!");
+        return;
+    }
+
     isPlaying = true;
 
     pthread_t playThread;
