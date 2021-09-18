@@ -18,7 +18,10 @@ static void *playThreadFunc(void *arg) {
             ++size;
         }
         if (player != nullptr) {
-            player->playPCM(buffer, size);
+            SLresult reuslt = player->playPCM(buffer, size);
+            if (reuslt != SL_RESULT_SUCCESS) {
+                LOGE("this frame play failed!!!");
+            }
         }
         size = 0;
     }
@@ -44,7 +47,7 @@ void Java_com_module_1opensl_1es_util_Opensl_1esUtil_nativePlayPCM(JNIEnv *env, 
     if (pcmFile.is_open()) {
         pcmFile.close();
     }
-    pcmFile.open(pcmPath);
+    pcmFile.open(pcmPath, std::ios::in);
 
     if (pcmFile.fail()) {
         LOGE("open file failed!!!");

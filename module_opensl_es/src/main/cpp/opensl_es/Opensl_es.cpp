@@ -41,7 +41,7 @@ void Opensl_es::createEngine() {
 }
 
 Opensl_es::Opensl_es() : mEngineObject(nullptr), mEngineInterface(nullptr),
-                         mOutputMixObject(nullptr), mIndex(0), mBufferSize(0) {
+                         mOutputMixObject(nullptr), mIndex(0), mBufferSize(0), mVolume(nullptr) {
     mMutex = PTHREAD_MUTEX_INITIALIZER;
     mBuffers[0] = nullptr;
     mBuffers[1] = nullptr;
@@ -100,18 +100,18 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
     //创建2个buffer缓冲类型的队列
     SLDataLocator_AndroidSimpleBufferQueue buffers = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,
                                                       bufferNum};
-    if (numChannels == 2) {
-        channelMask = 0;
-    }
+
+    SLmilliHertz simpleRate = (SLmilliHertz) samplesPerSec;
+
     //PCM数据格式
-    SLDataFormat_PCM formatPcm = {formatType, numChannels, samplesPerSec, bitsPerSample,
-                                  containerSize, channelMask, endianness};
+    SLDataFormat_PCM formatPcm = {formatType, numChannels, simpleRate, bitsPerSample,
+                                  containerSize, numChannels == 2 ? 0 : channelMask, endianness};
 
     /*
     * Enable Fast Audio when possible:  once we set the same rate to be the native, fast audio path
     * will be triggered
     */
-    if (samplesPerSec) {
+    if (simpleRate) {
         formatPcm.samplesPerSec = samplesPerSec;
     }
 
@@ -133,7 +133,7 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
 
     SLresult result = (*mEngineInterface)->CreateAudioPlayer(mEngineInterface, &mPlayerObject,
                                                              &audioSrc, &audioSink,
-                                                             samplesPerSec ? 2 : 3, ids, req);
+                                                             simpleRate ? 2 : 3, ids, req);
     if (result != SL_RESULT_SUCCESS) {
         LOGE("CreateAudioPlayer failed: %d", result);
         return result;
@@ -165,18 +165,18 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
         return result;
     }
     mEffectSend = nullptr;
-    if (samplesPerSec == 0) {
+    if (simpleRate == 0) {
         result = (*mPlayerObject)->GetInterface(mPlayerObject, SL_IID_EFFECTSEND, &mEffectSend);
         if (result != SL_RESULT_SUCCESS) {
             LOGE("mPlayerObj GetInterface failed: %d", result);
-            return false;
+            return result;
         }
     }
 
     result = (*mPlayerObject)->GetInterface(mPlayerObject, SL_IID_VOLUME, &mVolume);
     if (result != SL_RESULT_SUCCESS) {
         LOGE("mPlayerObj GetInterface failed: %d", result);
-        return false;
+        return result;
     }
 
     //设置播放器状态为播放状态
