@@ -4,40 +4,40 @@
 
 #include "Opensl_es.h"
 
-void Opensl_es::createEngine() {
+SLresult Opensl_es::createEngine() {
     //创建引擎对象：SLObjectItf mEngineObject
     SLresult result = slCreateEngine(&mEngineObject, 0, nullptr, 0, nullptr, nullptr);
     //创建失败
     if (result != SL_RESULT_SUCCESS) {
         LOGE("Engine create failed: %d", result);
-        return;
+        return result;
     }
     //初始化引擎
     result = (*mEngineObject)->Realize(mEngineObject, SL_BOOLEAN_FALSE);
     if (result != SL_BOOLEAN_FALSE) {
         LOGE("Engine realize failed: %d", result);
-        return;
+        return result;
     }
     //获取引擎接口 SLEngineItf mEngineInterface
     result = (*mEngineObject)->GetInterface(mEngineObject, SL_IID_ENGINE, &mEngineInterface);
     if (result != SL_RESULT_SUCCESS) {
         LOGE("Engine GetInterface failed: %d", result);
-        return;
+        return result;
     }
     //设置混音器
     //创建混音器 SLObjectItf mOutputMixObject
-    result = (*mEngineInterface)->CreateOutputMix(mEngineInterface, &mOutputMixObject, 0, nullptr,
-                                                  nullptr);
+    result = (*mEngineInterface)->CreateOutputMix(mEngineInterface, &mOutputMixObject, 0, 0, 0);
     if (result != SL_RESULT_SUCCESS) {
         LOGE("Engine CreateOutputMix failed: %d", result);
-        return;
+        return result;
     }
     //初始化混音器
     result = (*mOutputMixObject)->Realize(mOutputMixObject, SL_BOOLEAN_FALSE);
     if (result != SL_BOOLEAN_FALSE) {
         LOGE("Engine mOutputMixObject Realize failed: %d", result);
-        return;
+        return result;
     }
+    return result;
 }
 
 Opensl_es::Opensl_es() : mEngineObject(nullptr), mEngineInterface(nullptr),
@@ -119,8 +119,8 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
     SLDataSource audioSrc = {&buffers, &formatPcm};
     //配置音轨
     //设置混音器
-    SLDataLocator_OutputMix locOutpuMix = {SL_DATALOCATOR_OUTPUTMIX, mOutputMixObject};
-    SLDataSink audioSink = {&locOutpuMix, nullptr};
+    SLDataLocator_OutputMix locOutputMix = {SL_DATALOCATOR_OUTPUTMIX, mOutputMixObject};
+    SLDataSink audioSink = {&locOutputMix, nullptr};
     /*
      * create audio mPlayer:
      *     fast audio does not support when SL_IID_EFFECTSEND is required, skip it
@@ -185,7 +185,7 @@ Opensl_es::createPCMPlayer(SLuint32 formatType, SLuint32 numChannels, SLuint32 s
         LOGE("mPlayerObj SetPlayState failed: %d", result);
         return result;
     }
-    return SL_RESULT_SUCCESS;
+    return result;
 }
 
 SLresult Opensl_es::playPCM(const void *const data, const size_t &length) {

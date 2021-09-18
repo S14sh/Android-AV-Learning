@@ -69,7 +69,7 @@ private:
 
     pthread_mutex_t mMutex;
 
-    void createEngine();
+    SLresult createEngine();
 
     void releaseEngine();
 

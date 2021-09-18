@@ -16,7 +16,7 @@ extern "C"
 
 #define BUFFER_SIZE 2048
 
-static Opensl_es *player = nullptr;
+static Opensl_es *  player = nullptr;
 
 static std::ifstream pcmFile;
 

@@ -21,10 +21,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 播放录音单例类
+ *
  */
 public enum RecordPlayUtil {
 
+    /**
+     * 单例
+     */
     instance;
 
     private final String TAG = getClass().getSimpleName();
